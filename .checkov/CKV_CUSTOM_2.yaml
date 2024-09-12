@@ -1,0 +1,19 @@
+metadata:
+  id: "CKV_CUSTOM_2"
+  name: "Ensure every resource has a custom name and tags"
+  category: "General"
+  severity: "MEDIUM"
+  description: "Ensure that every resource has a custom name and tags."
+
+definition:
+  or:
+    - cond_type: "attribute"
+      resource_types:
+        - "*"
+      attribute: "tags"
+      operator: "exists"
+    - cond_type: "attribute"
+      resource_types:
+        - "*"
+      attribute: "tags.Name"
+      operator: "exists"
