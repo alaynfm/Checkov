@@ -27,4 +27,4 @@ jobs:
 
       - name: Run Checkov
         run: |
-          checkov -d ./infra/ --external-checks-dir .checkov --check CKV_CUSTOM_2 -o json
+          checkov -d ./infra --external-checks-dir .checkov --check CKV_CUSTOM_2 -o json
