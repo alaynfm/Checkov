@@ -26,9 +26,9 @@ jobs:
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           echo "Commit Message: $COMMIT_MESSAGE"
           if echo "$COMMIT_MESSAGE" | grep -iq "si ci/cd"; then
-            echo "::set-output name=should_run::true"
+            echo "should_run=true" >> $GITHUB_OUTPUT
           else
-            echo "::set-output name=should_run::false"
+            echo "should_run=false" >> $GITHUB_OUTPUT
           fi
 
   static_analysis:
@@ -64,17 +64,91 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
-      - name: Run Checkov security Checks
-        id: run_checkov
+      - name: Run Checkov Security Checks
+        id: run_checkov_security
         run: |
-          checkov -d ./infra --check ${{ env.SECURITY_CHECKS }} --external-checks-dir .github/checkov --skip-framework terraform
-      
+          mkdir -p checkov_reports/security
+          checkov -d ./infra \
+            --check ${{ env.SECURITY_CHECKS }} \
+            --external-checks-dir .github/checkov \
+            --skip-framework terraform \
+            -o json \
+            --output-file checkov_security.json
+          checkov -d ./infra \
+            --check ${{ env.SECURITY_CHECKS }} \
+            --external-checks-dir .github/checkov \
+            --skip-framework terraform \
+            -o junit \
+            --output-file checkov_security.xml
+          mv checkov_security.json checkov_reports/security/
+          mv checkov_security.xml checkov_reports/security/
+
+      - name: Upload Checkov Security Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-security-json
+          path: checkov_reports/security/checkov_security.json
+
+      - name: Upload Checkov Security JUnit Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-security-junit
+          path: checkov_reports/security/checkov_security.xml
+
       - name: Run Checkov Custom Checks
         id: run_checkov_custom
         run: |
-          checkov -d ./infra --external-checks-dir .github/checkov/custom_rules --skip-framework terraform
+          mkdir -p checkov_reports/custom
+          checkov -d ./infra \
+            --external-checks-dir .github/checkov/custom_rules \
+            --skip-framework terraform \
+            -o json \
+            --output-file checkov_custom.json
+          checkov -d ./infra \
+            --external-checks-dir .github/checkov/custom_rules \
+            --skip-framework terraform \
+            -o junit \
+            --output-file checkov_custom.xml
+          mv checkov_custom.json checkov_reports/custom/
+          mv checkov_custom.xml checkov_reports/custom/
+
+      - name: Upload Checkov Custom JSON Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-custom-json
+          path: checkov_reports/custom/checkov_custom.json
+
+      - name: Upload Checkov Custom JUnit Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-custom-junit
+          path: checkov_reports/custom/checkov_custom.xml
 
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
-          checkov -d ./infra --external-checks-dir .github/checkov/green_it --skip-framework terraform
+          mkdir -p checkov_reports/greenit
+          checkov -d ./infra \
+            --external-checks-dir .github/checkov/green_it \
+            --skip-framework terraform \
+            -o json \
+            --output-file checkov_greenit.json
+          checkov -d ./infra \
+            --external-checks-dir .github/checkov/green_it \
+            --skip-framework terraform \
+            -o junit \
+            --output-file checkov_greenit.xml
+          mv checkov_greenit.json checkov_reports/greenit/
+          mv checkov_greenit.xml checkov_reports/greenit/
+
+      - name: Upload Checkov Green IT JSON Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-greenit-json
+          path: checkov_reports/greenit/checkov_greenit.json
+
+      - name: Upload Checkov Green IT JUnit Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-greenit-junit
+          path: checkov_reports/greenit/checkov_greenit.xml
