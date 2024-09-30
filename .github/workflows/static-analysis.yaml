@@ -55,9 +55,16 @@ jobs:
         run: |
           SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks.txt)
           echo "SECURITY_CHECKS=${SECURITY_CHECKS}" >> $GITHUB_ENV
-
-      - name: Run Checkov Static Analysis
-        uses: bridgecrewio/checkov-action@v1.0.0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          directory: .
-          args: --check ${{ env.SECURITY_CHECKS }} --external-checks-dir .github/checkov --skip-framework terraform
+          python-version: '3.x'
+
+      - name: Install Checkov
+        run: pip install checkov
+
+      - name: Run Checkov
+        id: run_checkov
+        run: |
+          checkov -d ./infra --check ${{ env.SECURITY_CHECKS }} --external-checks-dir .github/checkov --skip-framework terraform
