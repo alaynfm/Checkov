@@ -48,5 +48,6 @@ jobs:
             echo "All controls passed."
           else
             echo "Failed controls: ${{ steps.parse_output.outputs.failed_controls }}"
+            jq -r '.results.failed_checks[] | select(.check_id | test("CKV_")) | "\(.check_id): \(.cve_id)"' checkov_output.json
             exit 1
           fi
