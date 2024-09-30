@@ -64,7 +64,17 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
-      - name: Run Checkov
+      - name: Run Checkov security Checks
         id: run_checkov
         run: |
           checkov -d ./infra --check ${{ env.SECURITY_CHECKS }} --external-checks-dir .github/checkov --skip-framework terraform
+      
+      - name: Run Checkov Custom Checks
+        id: run_checkov
+        run: |
+          checkov -d ./infra --external-checks-dir .github/checkov/custom_rules --skip-framework terraform
+
+      - name: Run Checkov Green IT
+        id: run_checkov
+        run: |
+          checkov -d ./infra --external-checks-dir .github/checkov/green_it --skip-framework terraform
