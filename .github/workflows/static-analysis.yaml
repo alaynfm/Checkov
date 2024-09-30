@@ -70,11 +70,11 @@ jobs:
           checkov -d ./infra --check ${{ env.SECURITY_CHECKS }} --external-checks-dir .github/checkov --skip-framework terraform
       
       - name: Run Checkov Custom Checks
-        id: run_checkov
+        id: run_checkov_custom
         run: |
           checkov -d ./infra --external-checks-dir .github/checkov/custom_rules --skip-framework terraform
 
       - name: Run Checkov Green IT
-        id: run_checkov
+        id: run_checkov_greenit
         run: |
           checkov -d ./infra --external-checks-dir .github/checkov/green_it --skip-framework terraform
