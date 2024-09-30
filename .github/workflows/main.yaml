@@ -32,5 +32,21 @@ jobs:
           echo "::set-output name=controls::$controls"
 
       - name: Run Checkov
+        id: run_checkov
         run: |
-          checkov -d ./infra --check ${{ steps.read_controls.outputs.controls }} -o json
+          checkov -d ./infra --check ${{ steps.read_controls.outputs.controls }} -o json > checkov_output.json
+
+      - name: Parse Checkov output for failed controls
+        id: parse_output
+        run: |
+          failed_controls=$(jq -r '.results.failed_checks[] | select(.check_id | test("CKV_")) | .check_id' checkov_output.json)
+          echo "::set-output name=failed_controls::$failed_controls"
+
+      - name: Output failed CVE numbers
+        run: |
+          if [ -z "${{ steps.parse_output.outputs.failed_controls }}" ]; then
+            echo "All controls passed."
+          else
+            echo "Failed controls: ${{ steps.parse_output.outputs.failed_controls }}"
+            exit 1
+          fi
