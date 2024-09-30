@@ -1,4 +1,4 @@
-n# .github/workflows/static-analysis.yml
+# .github/workflows/static-analysis.yml
 
 name: Static Analysis Pipeline
 
