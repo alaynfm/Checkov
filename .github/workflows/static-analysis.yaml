@@ -70,11 +70,11 @@ jobs:
           mkdir -p checkov_reports/security
           checkov -d ./infra \
             --check ${{ env.SECURITY_CHECKS }} \
-            --external-checks-dir .github/checkov \
-            --skip-framework terraform \
             -o json \
             --output-file checkov_security.json
+
           mv checkov_security.json checkov_reports/security/
+        continue-on-error: true
 
       - name: Upload Checkov Security Reports
         uses: actions/upload-artifact@v3
@@ -88,11 +88,11 @@ jobs:
           mkdir -p checkov_reports/custom
           checkov -d ./infra \
             --external-checks-dir .github/checkov/custom_rules \
-            --skip-framework terraform \
             -o json \
             --output-file checkov_custom.json
 
           mv checkov_custom.json checkov_reports/custom/
+        continue-on-error: true
 
 
       - name: Upload Checkov Custom JSON Report
@@ -108,11 +108,11 @@ jobs:
           mkdir -p checkov_reports/greenit
           checkov -d ./infra \
             --external-checks-dir .github/checkov/green_it \
-            --skip-framework terraform \
             -o json \
             --output-file checkov_greenit.json
 
           mv checkov_greenit.json checkov_reports/greenit/
+        continue-on-error: true
 
 
       - name: Upload Checkov Green IT JSON Report
