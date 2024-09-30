@@ -25,6 +25,12 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
+      - name: Read controls from file
+        id: read_controls
+        run: |
+          controls=$(cat .checkov/controls.txt | tr '\n' ',')
+          echo "::set-output name=controls::$controls"
+
       - name: Run Checkov
         run: |
-          checkov -d ./infra -o json
+          checkov -d ./infra --check ${{ steps.read_controls.outputs.controls }} -o json
