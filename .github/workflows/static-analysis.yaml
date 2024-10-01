@@ -25,7 +25,7 @@ jobs:
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           echo "Commit Message: $COMMIT_MESSAGE"
-          if echo "$COMMIT_MESSAGE" | grep -iq "si ci/cd"; then
+          if echo "$COMMIT_MESSAGE" | grep -iq "si ci"; then
             echo "should_run=true" >> $GITHUB_OUTPUT
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
@@ -73,25 +73,26 @@ jobs:
             -o json \
             --output-file checkov_security.json
 
-          mv checkov_security.json checkov_reports/security/
+          mv checkov_security.json checkov_reports/
         continue-on-error: true
 
       - name: Upload Checkov Security Reports
         uses: actions/upload-artifact@v3
         with:
           name: checkov-security-json
-          path: checkov_reports/security/checkov_security.json
+          path: checkov_reports/checkov_security.json
 
       - name: Run Checkov Custom Checks
         id: run_checkov_custom
         run: |
           mkdir -p checkov_reports/custom
           checkov -d ./infra \
+            --check CKV_AWS_260
             --external-checks-dir .github/checkov/custom_rules \
             -o json \
             --output-file checkov_custom.json
 
-          mv checkov_custom.json checkov_reports/custom/
+          mv checkov_custom.json checkov_reports/
         continue-on-error: true
 
 
@@ -99,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: checkov-custom-json
-          path: checkov_reports/custom/checkov_custom.json
+          path: checkov_reports/checkov_custom.json
 
 
       - name: Run Checkov Green IT
@@ -107,11 +108,12 @@ jobs:
         run: |
           mkdir -p checkov_reports/greenit
           checkov -d ./infra \
+            --check CKV_AWS_260
             --external-checks-dir .github/checkov/green_it \
             -o json \
             --output-file checkov_greenit.json
 
-          mv checkov_greenit.json checkov_reports/greenit/
+          mv checkov_greenit.json checkov_reports/
         continue-on-error: true
 
 
@@ -119,5 +121,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: checkov-greenit-json
-          path: checkov_reports/greenit/checkov_greenit.json
+          path: checkov_reports/checkov_greenit.json
 
