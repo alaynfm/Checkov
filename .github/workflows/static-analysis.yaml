@@ -112,17 +112,18 @@ jobs:
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
-          mkdir -p checkov_reports
+          cd .github/checkov/green_it
           ls -lias
-          checkov -d ./infra/rds \
+          checkov -d ./infra \
             --check ${{ env.SECURITY_CHECKS_GREEN }} \
-            --external-checks-dir .github/checkov/green_it/ 
-
+            --external-checks-dir .github/checkov/green_it/ \
+            -o json \
+            --output-file checkov_greenit.json
 
 
       - name: Upload Checkov Green IT JSON Report
         uses: actions/upload-artifact@v3
         with:
           name: checkov-greenit-json
-          path: checkov_reports/checkov_greenit.json
+          path: checkov_greenit.json
 
