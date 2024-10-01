@@ -1,0 +1,5 @@
+project name: Test Checkov Arqui
+cloud: aws
+account: 99999999999 #Subscription if azure
+greenit: 80
+environment: dev

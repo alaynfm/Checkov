@@ -57,6 +57,12 @@ jobs:
           SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks.txt)
           echo "SECURITY_CHECKS=${SECURITY_CHECKS}" >> $GITHUB_ENV
 
+      - name: Set Security Checks Variable
+        id: set_security_checks
+        run: |
+          SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks_custom.txt)
+          echo "SECURITY_CHECKS_CUSTOM=${SECURITY_CHECKS_CUSTOM}" >> $GITHUB_ENV
+
       - name: Set Security Checks Variable Green
         id: set_security_checks_green_it
         run: |
@@ -71,13 +77,37 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
+      - name: Run Checkov Security Checks
+        id: run_checkov_security
+        run: |
+          checkov -d ./infra -c ${{ env.SECURITY_CHECKS }} -o json --output-file checkov_security.json
+        continue-on-error: true
+
+      - name: Run Checkov Security Checks
+        id: run_checkov_security
+        run: |
+          checkov -d ./infra --external-checks-dir .github/checkov/aws/custom_rules -c ${{ env.SECURITY_CHECKS_CUSTOM }} -o json --output-file checkov_custom.json
+        continue-on-error: true
 
 
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
-          checkov -d ./infra/rds --external-checks-dir checkov -c CKV_CUSTOM_1
+          checkov -d ./infra --external-checks-dir .github/checkov/aws/green_it -c ${{ env.SECURITY_CHECKS_GREEN }} -o json --output-file checkov_greenit.json
+        continue-on-error: true
 
+
+      - name: Upload Checkov Green IT JSON Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov_security.json
+          path: checkov_security.json
+
+      - name: Upload Checkov Green IT JSON Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov_custom.json
+          path: checkov_custom.json
 
       - name: Upload Checkov Green IT JSON Report
         uses: actions/upload-artifact@v3
