@@ -52,7 +52,7 @@ jobs:
       - name: Run Checkov Green IT
         id: run_checkov_default
         run: |
-          checkov -d ./infra/aws -c .github/checkov/security_checks.yaml -o json 
+          checkov -d ./infra/aws --external-checks-dir .github/checkov/aws/green_it -o json 
         continue-on-error: true
 
       - name: Run Checkov Green IT
