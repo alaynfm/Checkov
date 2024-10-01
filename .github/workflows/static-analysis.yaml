@@ -118,6 +118,7 @@ jobs:
             --external-checks-dir .github/checkov/green_it/ \
             -o json \
             --output-file checkov_reports/checkov_greenit.json
+            -v 
         continue-on-error: true
 
 
