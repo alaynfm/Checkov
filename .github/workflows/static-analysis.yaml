@@ -58,6 +58,13 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
+
+      - name: Run Checkov Green IT
+        id: run_checkov_default
+        run: |
+          checkov -d ./infra/aws -c .github/checkov/security_checks.yaml -o json --output-file checkov_greenit.json
+        continue-on-error: true
+
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
