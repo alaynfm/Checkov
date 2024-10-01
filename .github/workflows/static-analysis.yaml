@@ -83,8 +83,8 @@ jobs:
           checkov -d ./infra -c ${{ env.SECURITY_CHECKS }} -o json --output-file checkov_security.json
         continue-on-error: true
 
-      - name: Run Checkov Security Checks
-        id: run_checkov_security
+      - name: Run Checkov Custom Security Checks
+        id: run_checkov_custom
         run: |
           checkov -d ./infra --external-checks-dir .github/checkov/aws/custom_rules -c ${{ env.SECURITY_CHECKS_CUSTOM }} -o json --output-file checkov_custom.json
         continue-on-error: true
@@ -97,13 +97,13 @@ jobs:
         continue-on-error: true
 
 
-      - name: Upload Checkov Green IT JSON Report
+      - name: Upload Checkov JSON Report
         uses: actions/upload-artifact@v3
         with:
           name: checkov_security.json
           path: checkov_security.json
 
-      - name: Upload Checkov Green IT JSON Report
+      - name: Upload Checkov Custom JSON Report
         uses: actions/upload-artifact@v3
         with:
           name: checkov_custom.json
