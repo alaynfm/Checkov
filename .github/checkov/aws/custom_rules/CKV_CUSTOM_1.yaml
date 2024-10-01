@@ -29,3 +29,4 @@ definition:
       attribute: "parameter_group_name"
       operator: "regex_match"
       value: ".*pgaudit.*"
+      
