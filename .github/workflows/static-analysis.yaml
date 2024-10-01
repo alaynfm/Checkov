@@ -113,8 +113,8 @@ jobs:
         id: run_checkov_greenit
         run: |
           checkov -d ./infra \
-            --external-checks-dir .github/checkov/green_it \
-            --check CVK_GREEN_1 \
+            --external-checks-dir ./.github/checkov/green_it \
+            -c CVK_GREEN_1 \
             -o json \
             --output-file checkov_greenit.json
 
