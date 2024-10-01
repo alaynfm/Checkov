@@ -67,7 +67,7 @@ jobs:
       - name: Run Checkov Security Checks
         id: run_checkov_security
         run: |
-          mkdir -p checkov_reports/security
+          mkdir -p checkov_reports
           checkov -d ./infra \
             --check ${{ env.SECURITY_CHECKS }} \
             -o json \
@@ -85,7 +85,7 @@ jobs:
       - name: Run Checkov Custom Checks
         id: run_checkov_custom
         run: |
-          mkdir -p checkov_reports/custom
+          mkdir -p checkov_reports
           checkov -d ./infra \
             --check CKV_AWS_260 \
             --external-checks-dir .github/checkov/custom_rules \
@@ -106,12 +106,11 @@ jobs:
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
-          mkdir -p checkov_reports/greenit
+          mkdir -p checkov_reports
           checkov -d ./infra \
-            --check CKV_AWS_260 \
             --external-checks-dir .github/checkov/green_it \
             -o json \
-            --output-file checkov_greenit.json
+            --output-file checkov_reports/checkov_greenit.json
 
           mv checkov_greenit.json checkov_reports/
         continue-on-error: true
