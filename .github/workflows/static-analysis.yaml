@@ -114,7 +114,7 @@ jobs:
         run: |
           checkov -d ./infra \
             --external-checks-dir .github/checkov/green_it \
-            --check ${{ env.SECURITY_CHECKS_GREEN }} \
+            --check CVK_GREEN_1 \
             -o json \
             --output-file checkov_greenit.json
 
