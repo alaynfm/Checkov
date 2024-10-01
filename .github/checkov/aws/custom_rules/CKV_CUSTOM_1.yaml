@@ -4,9 +4,7 @@ metadata:
   description: "Checks if RDS PostgreSQL instances have pgaudit enabled via their parameter group."
   scope:
     provider: aws
-  categories:
-    - logging
-    - compliance
+  category: Logging
   severity: HIGH
 
 definition:
@@ -25,7 +23,7 @@ definition:
         association_attribute: parameter_group_name
         condition:
           and:
-            - attribute: parameters[?name=='shared_preload_libraries'].value | [0]
+            - attribute: "parameters[?name=='shared_preload_libraries'].value | [0]"
               operator: contains
               value: "pgaudit"
       
