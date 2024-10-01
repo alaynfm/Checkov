@@ -23,7 +23,6 @@ jobs:
       - name: Check Commit Message
         id: check_commit_message
         run: |
-          tree -a
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
           echo "Commit Message: $COMMIT_MESSAGE"
           if echo "$COMMIT_MESSAGE" | grep -iq "si ci"; then
@@ -60,7 +59,7 @@ jobs:
       - name: Set Security Custom Checks Variable
         id: set_security_checks_custom
         run: |
-          SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks_custom.txt)
+          SECURITY_CHECKS_CUSTOM=$(paste -sd, .github/checkov/security_checks_custom.txt)
           echo "SECURITY_CHECKS_CUSTOM=${SECURITY_CHECKS_CUSTOM}" >> $GITHUB_ENV
 
       - name: Set Security Green Checks Variable 
@@ -80,20 +79,20 @@ jobs:
       - name: Run Checkov Security Checks
         id: run_checkov_security
         run: |
-          checkov -d ./infra -c ${{ env.SECURITY_CHECKS }} -o json --output-file checkov_security.json
+          checkov -d ./infra/aws -c ${{ env.SECURITY_CHECKS }} -o json --output-file checkov_security.json
         continue-on-error: true
 
       - name: Run Checkov Custom Security Checks
         id: run_checkov_custom
         run: |
-          checkov -d ./infra --external-checks-dir .github/checkov/aws/custom_rules -c ${{ env.SECURITY_CHECKS_CUSTOM }} -o json --output-file checkov_custom.json
+          checkov -d ./infra/aws --external-checks-dir .github/checkov/aws/custom_rules -c ${{ env.SECURITY_CHECKS_CUSTOM }} -o json --output-file checkov_custom.json
         continue-on-error: true
 
 
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
-          checkov -d ./infra --external-checks-dir .github/checkov/aws/green_it -c ${{ env.SECURITY_CHECKS_GREEN }} -o json --output-file checkov_greenit.json
+          checkov -d ./infra/aws --external-checks-dir .github/checkov/aws/green_it -c ${{ env.SECURITY_CHECKS_GREEN }} -o json --output-file checkov_greenit.json
         continue-on-error: true
 
 
