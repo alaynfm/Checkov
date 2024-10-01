@@ -57,13 +57,13 @@ jobs:
           SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks.txt)
           echo "SECURITY_CHECKS=${SECURITY_CHECKS}" >> $GITHUB_ENV
 
-      - name: Set Security Checks Variable
+      - name: Set Security Custom Checks Variable
         id: set_security_checks_custom
         run: |
           SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks_custom.txt)
           echo "SECURITY_CHECKS_CUSTOM=${SECURITY_CHECKS_CUSTOM}" >> $GITHUB_ENV
 
-      - name: Set Security Checks Variable Green
+      - name: Set Security Green Checks Variable 
         id: set_security_checks_green_it
         run: |
           SECURITY_CHECKS_GREEN=$(paste -sd, .github/checkov/security_checks_green_it.txt)

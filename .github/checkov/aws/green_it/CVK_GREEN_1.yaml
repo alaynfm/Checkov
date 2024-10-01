@@ -1,5 +1,5 @@
 metadata:
-  id: "CKV_CUSTOM_1"
+  id: "CVK_GREEN_1"
   name: "Ensure RDS has connection, disconnection logs enabled and pgaudit enabled"
   category: "Logging and Auditing"
   severity: "HIGH"
