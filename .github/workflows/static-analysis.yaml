@@ -87,7 +87,7 @@ jobs:
         run: |
           mkdir -p checkov_reports/custom
           checkov -d ./infra \
-            --check CKV_AWS_260
+            --check CKV_AWS_260 \
             --external-checks-dir .github/checkov/custom_rules \
             -o json \
             --output-file checkov_custom.json
@@ -108,7 +108,7 @@ jobs:
         run: |
           mkdir -p checkov_reports/greenit
           checkov -d ./infra \
-            --check CKV_AWS_260
+            --check CKV_AWS_260 \
             --external-checks-dir .github/checkov/green_it \
             -o json \
             --output-file checkov_greenit.json
