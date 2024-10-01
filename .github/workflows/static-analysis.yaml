@@ -118,8 +118,6 @@ jobs:
             --check "${{ env.SECURITY_CHECKS_GREEN }}" \
             -o json \
             --output-file checkov_reports/checkov_greenit.json
-
-          mv checkov_reports/checkov_greenit.json checkov_reports/
         continue-on-error: true
 
 
