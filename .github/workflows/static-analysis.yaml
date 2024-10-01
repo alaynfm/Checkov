@@ -31,4 +31,97 @@ jobs:
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
           fi
-        
+          
+  static_analysis:
+    name: 'Static Analysis'
+    runs-on: ubuntu-latest
+    needs: set_commit_flags
+    if: |
+      startsWith(github.ref, 'refs/heads/dev') &&
+      needs.set_commit_flags.outputs.should_run == 'true'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+      - name: Run TFLint
+        run: tflint
+
+      - name: Set Security Checks Variable
+        id: set_security_checks
+        run: |
+          SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks.txt)
+          echo "SECURITY_CHECKS=${SECURITY_CHECKS}" >> $GITHUB_ENV
+
+      - name: Set Security Checks Variable Green
+        id: set_security_checks_green_it
+        run: |
+          SECURITY_CHECKS_GREEN=$(paste -sd, .github/checkov/security_checks_green_it.txt)
+          echo "SECURITY_CHECKS_GREEN=${SECURITY_CHECKS_GREEN}" >> $GITHUB_ENV
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install Checkov
+        run: pip install checkov
+
+      - name: Run Checkov Security Checks
+        id: run_checkov_security
+        run: |
+          mkdir -p checkov_reports
+          checkov -d ./infra \
+            --check ${{ env.SECURITY_CHECKS }} \
+            -o json \
+            --output-file checkov_security.json
+
+          mv checkov_security.json checkov_reports/
+        continue-on-error: true
+
+      - name: Upload Checkov Security Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-security-json
+          path: checkov_reports/checkov_security.json
+
+      - name: Run Checkov Custom Checks
+        id: run_checkov_custom
+        run: |
+          mkdir -p checkov_reports
+          checkov -d ./infra \
+            --check CKV_AWS_260 \
+            --external-checks-dir ./checkov/custom_rules \
+            -o json \
+            --output-file checkov_custom.json
+
+          mv checkov_custom.json checkov_reports/
+        continue-on-error: true
+
+
+      - name: Upload Checkov Custom JSON Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-custom-json
+          path: checkov_reports/checkov_custom.json
+
+
+      - name: Run Checkov Green IT
+        id: run_checkov_greenit
+        run: |
+          checkov -d ./infra \
+            -c CVK_GREEN_1 \
+            -o json \
+            --output-file checkov_greenit.json
+
+
+      - name: Upload Checkov Green IT JSON Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-greenit-json
+          path: checkov_greenit.json
+
