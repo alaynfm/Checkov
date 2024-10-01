@@ -35,3 +35,22 @@
         with:
           name: checkov-custom-json
           path: checkov_reports/checkov_custom.json
+
+
+      - name: Install TFLint
+        run: |
+          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+
+      - name: Run TFLint
+        run: tflint
+
+
+
+            if: |
+      startsWith(github.ref, 'refs/heads/dev') &&
+      needs.set_commit_flags.outputs.should_run == 'true'
+
+
+
+
+

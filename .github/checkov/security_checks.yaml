@@ -1,3 +1,3 @@
-checks:
+check_list:
   - CKV_AWS_260
   - CKV_AWS_2

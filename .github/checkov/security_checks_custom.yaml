@@ -1,3 +1,3 @@
-checks:
+check_list:
   - CKV_CUSTOM_1
   - CKV_CUSTOM_2
