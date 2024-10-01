@@ -1,0 +1,21 @@
+metadata:
+  name: Ensure RDS instances use energy-efficient instance types
+  id: CVK_GREEN_1
+  category: GENERAL_SECURITY
+  supported_resources:
+    - aws_db_instance
+
+definition:
+  scan_resource_conf:
+    - condition: 
+        - key: instance_class
+          operator: in
+          value:
+            - db.t3.micro
+            - db.t3.small
+            - db.t3.medium
+            - db.t3.large
+            - db.t3.xlarge
+            - db.t3.2xlarge
+    - result: PASSED
+    - else: FAILED
