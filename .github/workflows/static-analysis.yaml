@@ -115,12 +115,13 @@ jobs:
           mkdir -p checkov_reports
           checkov -d ./infra \
             --external-checks-dir .github/checkov/green_it \
-            --check ${{ env.SECURITY_CHECKS_GREEN }} \ 
+            --check "${{ env.SECURITY_CHECKS_GREEN }}" \
             -o json \
             --output-file checkov_reports/checkov_greenit.json
 
-          mv checkov_greenit.json checkov_reports/
+          mv checkov_reports/checkov_greenit.json checkov_reports/
         continue-on-error: true
+
 
 
       - name: Upload Checkov Green IT JSON Report
