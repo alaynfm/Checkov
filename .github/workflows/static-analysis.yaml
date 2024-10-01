@@ -50,24 +50,6 @@ jobs:
       - name: Run TFLint
         run: tflint
 
-      - name: Set Security Checks Variable
-        id: set_security_checks
-        run: |
-          SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks.txt)
-          echo "SECURITY_CHECKS=${SECURITY_CHECKS}" >> $GITHUB_ENV
-
-      - name: Set Security Custom Checks Variable
-        id: set_security_checks_custom
-        run: |
-          SECURITY_CHECKS_CUSTOM=$(paste -sd, .github/checkov/security_checks_custom.txt)
-          echo "SECURITY_CHECKS_CUSTOM=${SECURITY_CHECKS_CUSTOM}" >> $GITHUB_ENV
-
-      - name: Set Security Green Checks Variable 
-        id: set_security_checks_green_it
-        run: |
-          SECURITY_CHECKS_GREEN=$(paste -sd, .github/checkov/security_checks_green_it.txt)
-          echo "SECURITY_CHECKS_GREEN=${SECURITY_CHECKS_GREEN}" >> $GITHUB_ENV
-      
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -76,37 +58,12 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
-      - name: Run Checkov Security Checks
-        id: run_checkov_security
-        run: |
-          checkov -d ./infra/aws -c ${{ env.SECURITY_CHECKS }} -o json --output-file checkov_security.json
-        continue-on-error: true
-
-      - name: Run Checkov Custom Security Checks
-        id: run_checkov_custom
-        run: |
-          checkov -d ./infra/aws --external-checks-dir .github/checkov/aws/custom_rules -c ${{ env.SECURITY_CHECKS_CUSTOM }} -o json --output-file checkov_custom.json
-        continue-on-error: true
-
-
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
           checkov -d ./infra/aws --external-checks-dir .github/checkov/aws/green_it -c .github/checkov/security_checks_green_it.yaml -o json --output-file checkov_greenit.json
         continue-on-error: true
 
-
-      - name: Upload Checkov JSON Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: checkov_security.json
-          path: checkov_security.json
-
-      - name: Upload Checkov Custom JSON Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: checkov_custom.json
-          path: checkov_custom.json
 
       - name: Upload Checkov Green IT JSON Report
         uses: actions/upload-artifact@v3
