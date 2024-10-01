@@ -1,3 +1,4 @@
+# .github/checkov/aws/custom_rules/CKV_CUSTOM_1.yaml
 metadata:
   id: "CKV_CUSTOM_1"
   name: "Ensure RDS PostgreSQL instances have pgaudit activated"
@@ -9,8 +10,7 @@ metadata:
 
 definition:
   and:
-    - cond_type: resource
-      resource_types:
+    - resource_types:
         - aws_db_instance
     - attribute: engine
       operator: equals
@@ -18,12 +18,9 @@ definition:
     - attribute: parameter_group_name
       operator: not_null
     - connected_resources:
-        # Assuming the parameter group is defined in the same Terraform code
         resource_type: aws_db_parameter_group
         association_attribute: parameter_group_name
         condition:
-          and:
-            - attribute: "parameters[?name=='shared_preload_libraries'].value | [0]"
-              operator: contains
-              value: "pgaudit"
-      
+          attribute: "parameters[?name=='shared_preload_libraries'].value | [0]"
+          operator: contains
+          value: "pgaudit"

@@ -51,7 +51,7 @@ jobs:
       - name: Run Checkov
         id: run_checkov_default
         run: |
-          checkov -d ./infra --framework terraform\
+          checkov -d ./infra --framework terraform \
           --config-file .github/checkov/CKV_LIST.yaml \
           -o json --output-file checkov_check.json 
         continue-on-error: true
