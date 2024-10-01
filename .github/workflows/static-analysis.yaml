@@ -35,7 +35,7 @@ jobs:
     name: 'Static Analysis'
     runs-on: ubuntu-latest
     needs: set_commit_flags
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -52,7 +52,7 @@ jobs:
       - name: Run Checkov Green IT
         id: run_checkov_default
         run: |
-          checkov -d ./infra/aws -c .github/checkov/security_checks.yaml -o json --output-file checkov_greenit.json
+          checkov -d ./infra/aws -c .github/checkov/security_checks.yaml -o json 
         continue-on-error: true
 
       - name: Run Checkov Green IT
