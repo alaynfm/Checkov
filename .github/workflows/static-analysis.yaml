@@ -114,8 +114,8 @@ jobs:
         run: |
           mkdir -p checkov_reports
           checkov -d ./infra \
-            --external-checks-dir .github/checkov/green_it \
-            --check "${{ env.SECURITY_CHECKS_GREEN }}" \
+            --check ${{ env.SECURITY_CHECKS_GREEN }} \
+            --external-checks-dir .github/checkov/green_it/ \
             -o json \
             --output-file checkov_reports/checkov_greenit.json
         continue-on-error: true
