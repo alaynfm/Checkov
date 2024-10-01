@@ -1,5 +1,5 @@
 metadata:
-  name: Ensure RDS instances use energy-efficient instance types
+  name: CVK_GREEN_1
   id: CVK_GREEN_1
   category: GENERAL_SECURITY
   supported_resources:

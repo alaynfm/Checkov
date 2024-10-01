@@ -112,11 +112,9 @@ jobs:
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
-          cd .github/checkov/green_it
-          ls -lias
           checkov -d ./infra \
+            --external-checks-dir .github/checkov/green_it \
             --check ${{ env.SECURITY_CHECKS_GREEN }} \
-            --external-checks-dir .github/checkov/green_it/ \
             -o json \
             --output-file checkov_greenit.json
 
