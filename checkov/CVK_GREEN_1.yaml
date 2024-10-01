@@ -4,6 +4,7 @@ metadata:
   category: GENERAL_SECURITY
   supported_resources:
     - aws_db_instance
+  severity: "HIGH"
 
 definition:
   scan_resource_conf:
@@ -17,5 +18,3 @@ definition:
             - db.t3.large
             - db.t3.xlarge
             - db.t3.2xlarge
-    - result: PASSED
-    - else: FAILED

@@ -76,7 +76,7 @@ jobs:
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
-          checkov -d ./infra/rds --external-checks-dir checkov
+          checkov -d ./infra/rds --external-checks-dir checkov -c CKV_CUSTOM_1
 
 
       - name: Upload Checkov Green IT JSON Report
