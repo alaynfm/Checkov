@@ -1,6 +1,6 @@
 metadata:
-  name: CVK_GREEN_1
-  id: CVK_GREEN_1
+  name: "CVK_GREEN_1"
+  id: "CVK_GREEN_1"
   category: GENERAL_SECURITY
   supported_resources:
     - aws_db_instance
