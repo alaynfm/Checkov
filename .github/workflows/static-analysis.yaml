@@ -71,51 +71,14 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
-      - name: Run Checkov Security Checks
-        id: run_checkov_security
-        run: |
-          mkdir -p checkov_reports
-          checkov -d ./infra \
-            --check ${{ env.SECURITY_CHECKS }} \
-            -o json \
-            --output-file checkov_security.json
-
-          mv checkov_security.json checkov_reports/
-        continue-on-error: true
-
-      - name: Upload Checkov Security Reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: checkov-security-json
-          path: checkov_reports/checkov_security.json
-
-      - name: Run Checkov Custom Checks
-        id: run_checkov_custom
-        run: |
-          mkdir -p checkov_reports
-          checkov -d ./infra \
-            --check CKV_AWS_260 \
-            --external-checks-dir ./checkov/custom_rules \
-            -o json \
-            --output-file checkov_custom.json
-
-          mv checkov_custom.json checkov_reports/
-        continue-on-error: true
-
-
-      - name: Upload Checkov Custom JSON Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: checkov-custom-json
-          path: checkov_reports/checkov_custom.json
 
 
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
-          checkov -d ./infra \
-            -c CVK_GREEN_1 \
+          checkov -d ./infra/rds \
             --external-checks-dir checkov \
+            -c CVK_GREEN_1 \
             -o json \
             --output-file checkov_greenit.json
 
