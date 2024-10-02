@@ -52,7 +52,7 @@ jobs:
         id: run_checkov_default
         run: |
           checkov -d ./infra --framework terraform \
-          --config-file .github/checkov/CKV_LIST.yaml \
+          --config-file checkov/CKV_LIST.yaml \
           -o json --output-file checkov_check.json 
         continue-on-error: true
 
@@ -60,8 +60,8 @@ jobs:
         id: run_checkov_custom
         run: |
           checkov -d ./infra --framework terraform \
-          --external-checks-dir .github/checkov/aws/custom_rules \
-          --config-file .github/checkov/CKV_CUSTOM_LIST.yaml \
+          --external-checks-dir checkov/custom_rules \
+          --config-file checkov/CKV_CUSTOM_LIST.yaml \
           -o json --output-file checkov_custom.json 
         continue-on-error: true
 
@@ -69,8 +69,8 @@ jobs:
         id: run_checkov_greenit
         run: |
           checkov -d ./infra  --framework terraform \
-          --external-checks-dir .github/checkov/aws/green_it \
-          --config-file .github/checkov/CKV_GREEN_LIST.yaml \
+          --external-checks-dir checkov/custom_rules \
+          --config-file checkov/CKV_GREEN_LIST.yaml \
           -o json --output-file checkov_greenit.json
         continue-on-error: true
 

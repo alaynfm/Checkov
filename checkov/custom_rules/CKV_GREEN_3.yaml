@@ -1,0 +1,17 @@
+metadata:
+  id: "CKV_GREEN_3"
+  name: "Enforce automatic scaling for RDS instances to match demand"
+  category: "Energy Efficiency"
+  severity: "HIGH"
+  description: "Automatic scaling ensures that RDS instances adjust their capacity based on demand, preventing over-provisioning and underutilization, thereby optimizing energy consumption."
+
+definition:
+  any:
+    - resource: "aws_db_instance"
+      condition:
+        equals:
+          auto_scaling: true
+    - resource: "aws_db_instance"
+      condition:
+        not_exists:
+          auto_scaling: false

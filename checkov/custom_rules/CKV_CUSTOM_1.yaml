@@ -1,0 +1,16 @@
+---
+metadata:
+  id: "CKV_CUSTOM_1"
+  name: "Ensure PostgreSQL RDS instances have PGAudit enabled"
+  category: "Security"
+  severity: "HIGH"
+  description: "Ensures that PostgreSQL RDS instances have the PGAudit extension enabled by verifying that the pgaudit.log parameter is set in the DB parameter group."
+
+definition:
+  and:
+    - resource: "aws_db_parameter_group"
+      attribute: "parameter"
+      equals: "pgaudit.log"
+    - resource: "aws_db_parameter_group"
+      attribute: "value"
+      not_empty: true

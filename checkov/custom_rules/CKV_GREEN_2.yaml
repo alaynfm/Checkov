@@ -1,0 +1,24 @@
+metadata:
+  id: "CKV_GREEN_2"
+  name: "Ensure resources are properly sized to prevent over-provisioning"
+  category: "Resource Optimization"
+  severity: "HIGH"
+  description: "Over-provisioning resources leads to unnecessary energy consumption. This policy ensures that all compute resources are appropriately sized based on actual usage requirements."
+
+definition:
+  all:
+    - or:
+        - resource: "aws_instance"
+          condition:
+            or:
+              - equals:
+                  instance_type: "t3.micro"
+              - equals:
+                  instance_type: "t2.micro"
+        - resource: "aws_db_instance"
+          condition:
+            or:
+              - equals:
+                  instance_class: "db.t3.micro"
+              - equals:
+                  instance_class: "db.t2.micro"
