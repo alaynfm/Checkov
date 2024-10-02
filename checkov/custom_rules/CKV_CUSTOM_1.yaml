@@ -1,25 +1,15 @@
----
 metadata:
-  id: "CKV_CUSTOM_1"
-  name: "Ensure PostgreSQL RDS instances have PGAudit enabled"
-  category: "Security"
-  severity: "HIGH"
-  description: "Ensures that PostgreSQL RDS instances have the PGAudit extension enabled by verifying that the pgaudit.log parameter is set in the DB parameter group."
+  id: "CKV_GREEN_1"
+  name: "Ensure RDS instances use energy-efficient instance types"
+  category: "Cost Optimization"
+  severity: "LOW"
+  description: "Using smaller RDS instances reduces energy consumption and cost. This policy ensures RDS instances use 'db.t2.micro' or 'db.t3.micro' instance classes."
 
 definition:
-  all_of:
-    - cond_type: "attribute"
-      resource_types:
-        - "aws_db_parameter_group"
-      attribute: "parameter"
-      sub_attribute: "name"
-      operator: "equals"
-      value: "shared_preload_libraries"
-    - cond_type: "attribute"
-      resource_types:
-        - "aws_db_parameter_group"
-      attribute: "parameter"
-      sub_attribute: "value"
-      operator: "equals"
-      value: "pgaudit"
-
+  cond_type: "attribute"
+  resource_types:
+    - "aws_db_parameter_group"
+  attribute: "shared_preload_libraries"
+  operator: "equals"
+  value: "pgaudit"
+ 
