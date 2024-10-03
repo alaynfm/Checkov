@@ -17,6 +17,6 @@ class SecretManagerSecretRotation(BaseResourceCheck):
                 if rotation.get("secret_id") == secret_id:
                     return CheckResult.PASSED
             return CheckResult.FAILED
-        return CheckResult.UNKNOWN
+        return CheckResult.SKIP
 
 check = SecretManagerSecretRotation()
