@@ -65,6 +65,18 @@ jobs:
           -o json --output-file checkov_custom.json 
         continue-on-error: true
 
+        - name: Run Checkov custom
+        id: run_checkov_custom_2
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infra/
+          framework: terraform
+          external-check-dir: aws/custom_rules
+          config-file: aws/CKV_CUSTOM_LIST.yaml
+          output: json
+          output-file: checkov_custom2.json 
+        continue-on-error: true
+
       - name: Run Checkov Green IT
         id: run_checkov_greenit
         run: |
