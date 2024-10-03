@@ -29,7 +29,6 @@ check:
   - CKV_AWS_23
   - CKV_AWS_24
   - CKV_AWS_25
-  - CKV_AWS_260
   - CKV_AWS_277
   - CKV2_AWS_5
   - CKV2_AWS_36
