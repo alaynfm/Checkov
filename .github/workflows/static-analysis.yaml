@@ -47,8 +47,8 @@ jobs:
           directory: infra/
           framework: terraform
           config_file: aws/CKV_LIST.yaml
-          output_format: json
-          output_file_path: checkov_check.json
+          output_format: junitxml
+          output_file_path: test-results
         continue-on-error: true
 
       - name: Run Checkov
@@ -59,8 +59,8 @@ jobs:
           framework: terraform
           external_checks_dirs: aws/custom_rules
           config_file: aws/CKV_CUSTOM_LIST.yaml
-          output_format: json
-          output_file_path: checkov_custom.json
+          output_format: junitxml
+          output_file_path: test-results1
         continue-on-error: true
 
       - name: Run Checkov
@@ -71,27 +71,20 @@ jobs:
           framework: terraform
           external_checks_dirs: aws/custom_rules
           config_file: aws/CKV_GREEN_LIST.yaml
-          output_format: json
-          output_file_path: checkov_greenit.json
+          output_format: junitxml
+          output_file_path: test-results2
         continue-on-error: true
 
-      
 
-      - name: Upload Checkov Green IT JSON Report
+      - name: Upload Checkov Green IT junitxml Report
         uses: actions/upload-artifact@v3
         with:
-          name: checkov_check.json
-          path: checkov_check.json
+          name: Checkov-report
+          path: test-results/results_junitxml.xml
 
-      - name: Upload Checkov Green IT JSON Report
-        uses: actions/upload-artifact@v3
+      - name: Publish annotations
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
         with:
-          name: checkov_custom.json
-          path: checkov_custom.json
-
-      - name: Upload Checkov Green IT JSON Report
-        uses: actions/upload-artifact@v3
-        with:
-          name: checkov-greenit.json
-          path: checkov_greenit.json
+          junit_files: "test-results/**/*.xml" 
 
