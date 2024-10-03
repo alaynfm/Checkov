@@ -48,7 +48,7 @@ jobs:
           framework: terraform
           config_file: aws/CKV_LIST.yaml
           output_format: csv
-          output_file_path: checkov_check.csv
+          output_file_path: checkov_check.json
         continue-on-error: true
 
       - name: Run Checkov
@@ -60,7 +60,7 @@ jobs:
           external_checks_dirs: aws/custom_rules
           config_file: aws/CKV_CUSTOM_LIST.yaml
           output_format: csv
-          output_file_path: checkov_custom.csv
+          output_file_path: checkov_custom.json
         continue-on-error: true
 
       - name: Run Checkov
@@ -72,7 +72,7 @@ jobs:
           external_checks_dirs: aws/custom_rules
           config_file: aws/CKV_GREEN_LIST.yaml
           output_format: csv
-          output_file_path: checkov_greenit.csv
+          output_file_path: checkov_greenit.json
         continue-on-error: true
 
       
@@ -80,18 +80,18 @@ jobs:
       - name: Upload Checkov Green IT JSON Report
         uses: actions/upload-artifact@v3
         with:
-          name: checkov_check.csv
-          path: checkov_check.csv
+          name: checkov_check.json
+          path: checkov_check.json
 
       - name: Upload Checkov Green IT JSON Report
         uses: actions/upload-artifact@v3
         with:
-          name: checkov_custom.csv
-          path: checkov_custom.csv
+          name: checkov_custom.json
+          path: checkov_custom.json
 
       - name: Upload Checkov Green IT JSON Report
         uses: actions/upload-artifact@v3
         with:
-          name: checkov-greenit.csv
-          path: checkov_greenit.csv
+          name: checkov-greenit.json
+          path: checkov_greenit.json
 
