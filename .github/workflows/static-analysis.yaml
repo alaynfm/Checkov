@@ -48,14 +48,6 @@ jobs:
       - name: Install Checkov
         run: pip install checkov
 
-      - name: Run Checkov
-        id: run_checkov_default
-        run: |
-          checkov -d ./infra --framework terraform \
-          --config-file aws/CKV_LIST.yaml \
-          -o json --output-file checkov_check.json 
-        continue-on-error: true
-
       - name: Run Checkov custom
         id: run_checkov_custom
         run: |
