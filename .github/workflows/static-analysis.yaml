@@ -47,7 +47,7 @@ jobs:
           directory: infra/
           framework: terraform
           config_file: aws/CKV_LIST.yaml
-          output_format: csv
+          output_format: json
           output_file_path: checkov_check.json
         continue-on-error: true
 
@@ -59,7 +59,7 @@ jobs:
           framework: terraform
           external_checks_dirs: aws/custom_rules
           config_file: aws/CKV_CUSTOM_LIST.yaml
-          output_format: csv
+          output_format: json
           output_file_path: checkov_custom.json
         continue-on-error: true
 
@@ -71,7 +71,7 @@ jobs:
           framework: terraform
           external_checks_dirs: aws/custom_rules
           config_file: aws/CKV_GREEN_LIST.yaml
-          output_format: csv
+          output_format: json
           output_file_path: checkov_greenit.json
         continue-on-error: true
 
