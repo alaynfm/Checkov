@@ -4,7 +4,7 @@ from checkov.terraform.checks.resource.base_resource_check import BaseResourceCh
 class SecretManagerSecretExists(BaseResourceCheck):
     def __init__(self):
         name = "Ensure Secrets Manager secret is created"
-        id = "CKV_AWS_306"
+        id = "CKV_CUSTOM_3"
         supported_resources = ("aws_secretsmanager_secret",)
         categories = (CheckCategories.SECRETS,)
         super().__init__(name=name, id=id, categories=categories, supported_resources=supported_resources)
