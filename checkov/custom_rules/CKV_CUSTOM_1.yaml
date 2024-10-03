@@ -1,5 +1,5 @@
 metadata:
-  name: "Ensure Postgres RDS as aws_db_instance has PGAUDIT enabled"
+  name: "Ensure Postgres RDS as aws_db_instance has AUDIT enabled"
   id: "CKV_CUSTOM_1"
   severity: "HIGH"
   category: "LOGGING"
@@ -34,3 +34,10 @@ definition:
       attribute: "parameter.*.name"
       operator: contains
       value: "pgaudit.log_catalog"
+    - cond_type: attribute
+      resource_types:
+        - aws_db_parameter_group
+      attribute: "parameter.*.name"
+      operator: contains
+      value: "log_connections"
+      value: "on"
