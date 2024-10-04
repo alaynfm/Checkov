@@ -97,7 +97,7 @@ jobs:
             const fs = require('fs');
             const filePath = 'failed_CKV.txt';
             const content = fs.readFileSync(filePath, 'utf8');
-            const commitSha = github.context.sha;
+            const commitSha = github.context.sha || process.env.GITHUB_SHA; // Fallback to env variable
 
             await github.rest.repos.createCommitComment({
               owner: github.context.repo.owner,
