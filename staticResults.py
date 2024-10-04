@@ -2,9 +2,11 @@ import csv
 import glob
 
 def process_csv(file_path, txt_file, CKV):
+    txt_file.write(f"Misconfigurations detected with Checkov\n")
+    txt_file.write("-" * 40 + "\n")
     with open(file_path, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
-        txt_file.write(f"Misconfigurations detected with Checkov\n ")
+        
         for row in csv_reader:
             if row['Misconfigurations']:
                 txt_file.write(f"Misconfigurations: {row['Misconfigurations']}\n")
