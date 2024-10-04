@@ -57,7 +57,7 @@ jobs:
         with:
           name: checkov-results
           path: |
-            test-results1/*.csv
+            *.csv
 
       - name: Run Checkov CUSTOM Policies
         id: checkov_custom
@@ -76,7 +76,7 @@ jobs:
         with:
           name: checkov-results
           path: |
-            test-results2/*.csv
+            *.csv
 
       - name: Run Checkov GREEN IT Policies
         id: checkov_greenit
@@ -95,7 +95,7 @@ jobs:
         with:
           name: checkov-results
           path: |
-            test-results3/*.csv
+            *.csv
 
 
       - name: Upload Checkov Green IT junitxml Report
