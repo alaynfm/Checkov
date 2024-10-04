@@ -80,18 +80,18 @@ jobs:
       - name: Run Python Script
         run: |
           python3 staticResults.py  # Ensure your script is named script.py and located in the root directory
-
-
+      
       - uses: actions/checkout@v1
-      - name: Add commit comment with file content
+      - name: Add commit comment
         run: |
           file_content=$(cat failed_CKV.txt)
           jq -nc --arg body "$file_content" '{"body": $body}' | \
-          curl -sL -X POST -d @- \
+          curl -sL  -X POST -d @- \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/comments"
-
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
+      
+      
       - name: Upload Checkov Reports
         uses: actions/upload-artifact@v3
         with:
@@ -100,3 +100,7 @@ jobs:
             *.csv
             failed_CKV.txt
             failed_CKV_Detailed.txt
+  
+
+
+
