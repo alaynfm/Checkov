@@ -23,7 +23,7 @@ def main():
     CKV = ""
     with open(output_file, mode='w') as txt_file:
         txt_file.write(f"Misconfigurations detected with Checkov\n")
-        txt_file.write("-" * 40 + "\n")
+        txt_file.write("-------------------")
         for file_path in glob.glob('*iac.csv'):
             CKV = process_csv(file_path, txt_file, CKV)
     with open(output_file_list, mode='w') as txt_file:
