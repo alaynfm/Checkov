@@ -84,8 +84,7 @@ jobs:
       - name: Add commit comment
         run: |
           file_content=$(cat failed_CKV_Detailed.txt)
-          # Ensure the content is in normal size
-          normalized_content=$(echo "$file_content" | tr '[:upper:]' '[:lower:]')
+          jq -nc --arg body "$file_content" '{"body": $body}' | \
           curl -sL  -X POST -d @- \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
