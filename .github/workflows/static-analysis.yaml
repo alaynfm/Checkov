@@ -84,11 +84,14 @@ jobs:
       - name: Add commit comment
         run: |
           file_content=$(cat failed_CKV_Detailed.txt)
-          jq -nc --arg body "$file_content" '{"body": $body}' | \
-          curl -sL  -X POST -d @- \
+          # Remove any special formatting and convert to lowercase
+          normalized_content=$(echo "$file_content" | tr '[:upper:]' '[:lower:]' | sed 's/[[:cntrl:]]//g')
+          jq -nc --arg body "$normalized_content" '{"body": $body}' | \
+          curl -sL -X POST -d @- \
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
+
       
       
       - name: Upload Checkov Reports
