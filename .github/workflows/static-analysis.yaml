@@ -51,6 +51,14 @@ jobs:
           output_file_path: .
         continue-on-error: true
 
+
+      - name: Upload Checkov results
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-results
+          path: |
+            test-results1/*.csv
+
       - name: Run Checkov CUSTOM Policies
         id: checkov_custom
         uses: bridgecrewio/checkov-action@master
@@ -63,6 +71,13 @@ jobs:
           output_file_path: .
         continue-on-error: true
 
+      - name: Upload Checkov results
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-results
+          path: |
+            test-results2/*.csv
+
       - name: Run Checkov GREEN IT Policies
         id: checkov_greenit
         uses: bridgecrewio/checkov-action@master
@@ -74,6 +89,13 @@ jobs:
           output_format: csv
           output_file_path: .
         continue-on-error: true
+
+      - name: Upload Checkov results
+        uses: actions/upload-artifact@v3
+        with:
+          name: checkov-results
+          path: |
+            test-results3/*.csv
 
 
       - name: Upload Checkov Green IT junitxml Report
