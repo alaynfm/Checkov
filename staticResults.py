@@ -13,7 +13,7 @@ def process_csv(file_path, txt_file, CKV):
                 txt_file.write(f"Severity: {row['Severity']}\n")
                 txt_file.write(f"Policy title: {row['Policy title']}\n")
                 txt_file.write(f"Guideline: {row['Guideline']}\n")
-                txt_file.write("-------------------\n")
+                txt_file.write("-------------------")
                 CKV += f"{row['Misconfigurations']}\n"
     return CKV
 
@@ -22,12 +22,10 @@ def main():
     output_file_list = 'failed_CKV.txt'
     CKV = ""
     with open(output_file, mode='w') as txt_file:
-        txt_file.write(f"```bash")
-        txt_file.write(f"Checkov Missconfigurations\n")
+        txt_file.write(f"Misconfigurations detected with Checkov\n")
         txt_file.write("-------------------\n")
         for file_path in glob.glob('*iac.csv'):
             CKV = process_csv(file_path, txt_file, CKV)
-        txt_file.write(f"```bash")
     with open(output_file_list, mode='w') as txt_file:
         txt_file.write(CKV)
 
