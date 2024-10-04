@@ -84,7 +84,7 @@ jobs:
       - name: Add commit comment
         run: |
           ls -lias
-          file_content=$(cat failed_CKV.txt)
+          file_content=$(cat failed_CKV_Detailed.txt)
           jq -nc --arg body "$file_content" '{"body": $body}' | \
           curl -sL  -X POST -d @- \
             -H "Content-Type: application/json" \
@@ -98,8 +98,7 @@ jobs:
           name: all-reports
           path: |
             *.csv
-            failed_CKV.txt
-            failed_CKV_Detailed.txt
+            failed_*.txt
   
 
 

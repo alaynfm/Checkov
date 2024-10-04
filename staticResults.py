@@ -4,6 +4,7 @@ import glob
 def process_csv(file_path, txt_file, CKV):
     with open(file_path, mode='r') as csv_file:
         csv_reader = csv.DictReader(csv_file)
+        txt_file.write(f"Misconfigurations detected with Checkov")
         for row in csv_reader:
             if row['Misconfigurations']:
                 txt_file.write(f"Misconfigurations: {row['Misconfigurations']}\n")
@@ -19,7 +20,7 @@ def process_csv(file_path, txt_file, CKV):
 def main():
     output_file = 'failed_CKV_Detailed.txt'
     output_file_list = 'failed_CKV.txt'
-    CKV = "Missconfigurations detected with CHECKOV: \n"
+    CKV = ""
     with open(output_file, mode='w') as txt_file:
         for file_path in glob.glob('*iac.csv'):
             CKV = process_csv(file_path, txt_file, CKV)
