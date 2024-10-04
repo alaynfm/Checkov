@@ -90,10 +90,10 @@ jobs:
       
       - name: Upload Checkov results
         run: |
-          ls- lias
+          ls -lias
 
       - name: Upload Misconfigurations Report
         uses: actions/upload-artifact@v3
         with:
-          name: misconfigurations-report.txt
+          name: missconfigurations.txt
           path: missconfigurations.txt
