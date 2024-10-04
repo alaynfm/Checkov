@@ -24,7 +24,6 @@ def main():
     with open(output_file, mode='w') as txt_file:
         txt_file.write(f"```bash")
         txt_file.write(f"Checkov Missconfigurations\n")
-        isconfigurations detected with Checkov\n
         txt_file.write("-------------------\n")
         for file_path in glob.glob('*iac.csv'):
             CKV = process_csv(file_path, txt_file, CKV)
