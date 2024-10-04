@@ -40,18 +40,18 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Run Checkov
+      - name: Run Checkov PRISMA Policies
         id: checkov
         uses: bridgecrewio/checkov-action@master
         with:
           directory: infra/
           framework: terraform
           config_file: aws/CKV_LIST.yaml
-          output_format: junitxml
+          output_format: csv
           output_file_path: test-results
         continue-on-error: true
 
-      - name: Run Checkov
+      - name: Run Checkov CUSTOM Policies
         id: checkov_custom
         uses: bridgecrewio/checkov-action@master
         with:
@@ -59,11 +59,11 @@ jobs:
           framework: terraform
           external_checks_dirs: aws/custom_rules
           config_file: aws/CKV_CUSTOM_LIST.yaml
-          output_format: junitxml
+          output_format: csv
           output_file_path: test-results1
         continue-on-error: true
 
-      - name: Run Checkov
+      - name: Run Checkov GREEN IT Policies
         id: checkov_greenit
         uses: bridgecrewio/checkov-action@master
         with:
@@ -71,13 +71,15 @@ jobs:
           framework: terraform
           external_checks_dirs: aws/custom_rules
           config_file: aws/CKV_GREEN_LIST.yaml
-          output_format: junitxml
+          output_format: csv
           output_file_path: test-results2
         continue-on-error: true
 
 
       - name: Upload Checkov Green IT junitxml Report
         uses: actions/upload-artifact@v3
+        run: |
+          ls -lias
         with:
           name: Checkov-report
           path: test-results/results_junitxml.xml
