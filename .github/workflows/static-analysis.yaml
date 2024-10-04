@@ -51,14 +51,6 @@ jobs:
           output_file_path: .
         continue-on-error: true
 
-
-      - name: Upload Checkov results
-        uses: actions/upload-artifact@v3
-        with:
-          name: checkov-results
-          path: |
-            *.csv
-
       - name: Run Checkov CUSTOM Policies
         id: checkov_custom
         uses: bridgecrewio/checkov-action@master
@@ -70,13 +62,6 @@ jobs:
           output_format: csv
           output_file_path: .
         continue-on-error: true
-
-      - name: Upload Checkov results
-        uses: actions/upload-artifact@v3
-        with:
-          name: checkov-results
-          path: |
-            *.csv
 
       - name: Run Checkov GREEN IT Policies
         id: checkov_greenit
@@ -97,10 +82,14 @@ jobs:
           path: |
             *.csv
 
-
-      - name: Upload Checkov Green IT junitxml Report
-        id: test_folder
+      - name: Run Python Script
         run: |
-          ls -lias
+          python3 script.py  # Ensure your script is named script.py and located in the root directory
+
+      - name: Upload Misconfigurations Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: misconfigurations-report.txt
+          path: missconfigurations.txt
 
 #https://spacelift.io/blog/infrastructure-as-code-with-github-actions
