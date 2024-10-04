@@ -87,6 +87,11 @@ jobs:
       - name: Run Python Script
         run: |
           python3 staticResults.py  # Ensure your script is named script.py and located in the root directory
+      
+      - name: Upload Checkov results
+        uses: actions/upload-artifact@v3
+        run: |
+          ls- lias
 
       - name: Upload Misconfigurations Report
         uses: actions/upload-artifact@v3
