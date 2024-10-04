@@ -95,5 +95,11 @@ jobs:
       - name: Upload Misconfigurations Report
         uses: actions/upload-artifact@v3
         with:
-          name: missconfigurations.txt
-          path: missconfigurations.txt
+          name: failed_CKV.txt
+          path: failed_CKV.txt
+        
+      - name: Upload Misconfigurations Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: failed_CKV_Detailed.txt
+          path: failed_CKV_Detailed.txt
