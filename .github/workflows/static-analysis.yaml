@@ -80,8 +80,5 @@ jobs:
         uses: actions/upload-artifact@v3
         run: |
           ls -lias
-        with:
-          name: Checkov-report
-          path: test-results/results_junitxml.xml
 
 #https://spacelift.io/blog/infrastructure-as-code-with-github-actions
