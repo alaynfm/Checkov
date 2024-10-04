@@ -77,7 +77,7 @@ jobs:
 
 
       - name: Upload Checkov Green IT junitxml Report
-        uses: actions/upload-artifact@v3
+        id: test_folder
         run: |
           ls -lias
 
