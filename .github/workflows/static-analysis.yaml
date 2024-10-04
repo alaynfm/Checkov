@@ -77,29 +77,32 @@ jobs:
           output_file_path: .
         continue-on-error: true
 
-      - name: Upload Checkov results
-        uses: actions/upload-artifact@v3
-        with:
-          name: checkov-results
-          path: |
-            *.csv
-
       - name: Run Python Script
         run: |
           python3 staticResults.py  # Ensure your script is named script.py and located in the root directory
-      
-      - name: Upload Checkov results
-        run: |
-          ls -lias
 
-      - name: Upload Misconfigurations Report
+      - name: Upload Checkov Reports
         uses: actions/upload-artifact@v3
         with:
-          name: failed_CKV.txt
-          path: failed_CKV.txt
-        
-      - name: Upload Misconfigurations Report
-        uses: actions/upload-artifact@v3
+          name: all-reports
+          path: |
+            *.csv
+            failed_CKV.txt
+            failed_CKV_Detailed.txt
+
+      - name: Create Commit Comment
+        uses: actions/github-script@v6
         with:
-          name: failed_CKV_Detailed.txt
-          path: failed_CKV_Detailed.txt
+          script: |
+            const fs = require('fs');
+            const filePath = 'failed_CKV.txt';
+            const content = fs.readFileSync(filePath, 'utf8');
+            const { context } = require('@actions/github');
+            const commitSha = context.sha;
+
+            await github.rest.repos.createCommitComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: commitSha,
+              body: `Here are the misconfigurations:\n\n${content}`
+            });
