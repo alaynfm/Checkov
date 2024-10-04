@@ -82,10 +82,4 @@ jobs:
           name: Checkov-report
           path: test-results/results_junitxml.xml
 
-      - name: Publish annotations
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
-        with:
-          junit_files: "test-results/**/*.xml" 
-
 #https://spacelift.io/blog/infrastructure-as-code-with-github-actions
