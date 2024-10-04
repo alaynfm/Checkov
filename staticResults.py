@@ -13,7 +13,7 @@ def process_csv(file_path, txt_file, CKV):
                 txt_file.write(f"Severity: {row['Severity']}\n")
                 txt_file.write(f"Policy title: {row['Policy title']}\n")
                 txt_file.write(f"Guideline: {row['Guideline']}\n")
-                txt_file.write("-" * 40 + "\n")
+                txt_file.write("-------------------")
                 CKV += f"{row['Misconfigurations']}\n"
     return CKV
 
