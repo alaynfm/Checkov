@@ -90,13 +90,12 @@ jobs:
             failed_CKV.txt
             failed_CKV_Detailed.txt
 
-      - name: Create commit comment
-        uses: peter-evans/commit-comment@v1
-        with:
-          body: |
-            This is a multi-line test comment
-            - With GitHub **Markdown**
-            - Created by [commit-comment][1]
-
-            [1]: https://github.com/peter-evans/commit-comment
+      - uses: actions/checkout@v1
+      - name: Add commit comment
+        run: |
+          jq -nc '{"body": "test comment"}' | \
+          curl -sL  -X POST -d @- \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
 
