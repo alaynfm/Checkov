@@ -10,11 +10,9 @@ permissions:
   security-events: write  # Ensure the action can upload SARIF results    
 
 jobs:
-
   tflint:
     runs-on: ubuntu-latest
     needs: set_commit_flags
-    if: needs.set_commit_flags.outputs.should_run == 'true'  # Only run if 'should_run' is true
 
     steps:
       - name: Checkout source code
