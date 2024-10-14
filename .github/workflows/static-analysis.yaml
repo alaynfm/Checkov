@@ -53,9 +53,6 @@ jobs:
       with:
         tflint_version: v0.52.0
 
-    - name: Show TFLint version
-      run: tflint --version
-
     - name: Initialize TFLint
       run: tflint --init
       env:
@@ -66,10 +63,13 @@ jobs:
         tflint -f sarif --chdir=infra/ --recursive > tflint.sarif
       continue-on-error: true
 
-    - uses: github/codeql-action/upload-sarif@v3
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v3
       with:
-          # Path to SARIF file relative to the root of the repository
         sarif_file: tflint.sarif
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Explicitly use the GITHUB_TOKEN from secrets
+
 
 
   static_analysis_Checkov:
