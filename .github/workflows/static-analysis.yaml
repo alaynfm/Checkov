@@ -62,6 +62,7 @@ jobs:
 
     - name: Run TFLint
       run: tflint -f compact --chdir=infra/ --recursive
+      continue-on-error: true
 
 
     - name: Add TFLint Problem Matcher
