@@ -67,7 +67,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: prisma_policies.sarif
-          category: checkov-analysis
+          category: checkov-analysis-1
 
       - name: Run Checkov CUSTOM Policies
         id: checkov_custom
@@ -85,7 +85,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: custom_policies.sarif
-          category: checkov-analysis
+          category: checkov-analysis-2
 
       - name: Run Checkov GREEN IT Policies
         id: checkov_greenit
@@ -103,7 +103,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: green_it_policies.sarif
-          category: checkov-analysis
+          category: checkov-analysis-3
 
 
   tfsec:
