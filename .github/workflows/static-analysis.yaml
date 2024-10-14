@@ -31,8 +31,6 @@ jobs:
 
       - name: Initialize TFLint
         run: tflint --init
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Run TFLint and generate SARIF report
         run: |
@@ -49,6 +47,7 @@ jobs:
         with:
           sarif_file: results.sarif
           category: my-analysis-tool
+
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
