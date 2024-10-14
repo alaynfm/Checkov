@@ -57,7 +57,7 @@ jobs:
         with:
           directory: infra/
           framework: terraform
-          config_file: aws/CKV_LIST.yaml
+          #config_file: aws/CKV_LIST.yaml
           output_format: sarif
           output_file_path: prisma_policies.sarif
         continue-on-error: true
