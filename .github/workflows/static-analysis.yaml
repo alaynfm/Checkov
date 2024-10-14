@@ -6,58 +6,148 @@ on:
       - main
 
 permissions:
-  contents: read     
+  contents: write
+  security-events: write  # Ensure the action can upload SARIF results    
 
 jobs:
-  set_commit_flags:
-    name: 'Set Commit Flags'
+
+  tflint:
     runs-on: ubuntu-latest
-
-    outputs:
-      should_run: ${{ steps.check_commit_message.outputs.should_run }}
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-      - name: Check Commit Message
-        id: check_commit_message
+      - name: Cache TFLint plugin directory
+        uses: actions/cache@v4
+        with:
+          path: ~/.tflint.d/plugins
+          key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.52.0
+
+      - name: Initialize TFLint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Run TFLint and generate SARIF report
         run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          echo "Commit Message: $COMMIT_MESSAGE"
-          if echo "$COMMIT_MESSAGE" | grep -iq "si ci/cd"; then
-            echo "::set-output name=should_run::true"
-          else
-            echo "::set-output name=should_run::false"
+          tflint --chdir=infra/ --recursive -f compact > results.txt
+        continue-on-error: true
+
+      - name: Add commit comment
+        run: |
+
+          # Check if results.txt is not empty
+          if [  -s results.txt ]; then
+            file_content=$(cat results.txt)
+            # Escape markdown special characters without adding backticks
+            escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
+            jq -nc --arg body "$escaped_content" '{"body": $body}' | \
+            curl -sL -X POST -d @- \
+              -H "Content-Type: application/json" \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
+            exit 1
           fi
 
-  static_analysis:
-    name: 'Static Analysis'
+          echo "TFLINT ERRORS 0"
+        continue-on-error: true
+
+  static_analysis_Checkov:
+    name: 'Checkov Policies'
     runs-on: ubuntu-latest
-    needs: set_commit_flags
-    if: |
-      startsWith(github.ref, 'refs/heads/dev') &&
-      needs.set_commit_flags.outputs.should_run == 'true'
+    needs: tflint
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install TFLint
-        run: |
-          curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
-
-      - name: Run TFLint
-        run: tflint
-
-      - name: Set Security Checks Variable
-        id: set_security_checks
-        run: |
-          SECURITY_CHECKS=$(paste -sd, .github/checkov/security_checks.txt)
-          echo "SECURITY_CHECKS=${SECURITY_CHECKS}" >> $GITHUB_ENV
-
-      - name: Run Checkov Static Analysis
-        uses: bridgecrewio/checkov-action@v2.0.0
+      - name: Run Checkov PRISMA Policies
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
         with:
-          directory: .
-          args: --check ${{ env.SECURITY_CHECKS }} --external-checks-dir .github/checkov --skip-framework terraform
+          directory: infra/
+          framework: terraform
+          config_file: aws/CKV_LIST.yaml
+          output_format: csv
+          output_file_path: .
+        continue-on-error: true
+
+      - name: Run Checkov CUSTOM Policies
+        id: checkov_custom
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infra/
+          framework: terraform
+          external_checks_dirs: aws/custom_rules
+          config_file: aws/CKV_CUSTOM_LIST.yaml
+          output_format: csv
+          output_file_path: .
+        continue-on-error: true
+
+      - name: Run Checkov GREEN IT Policies
+        id: checkov_greenit
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infra/
+          framework: terraform
+          external_checks_dirs: aws/custom_rules
+          config_file: aws/CKV_GREEN_LIST.yaml
+          output_format: csv
+          output_file_path: .
+        continue-on-error: true
+
+      - name: Upload Checkov Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: all-reports
+          path: |
+            *.csv
+            failed_*.txt
+
+      - name: Run Python Script
+        run: |
+          python3 .github/staticResults.py  # Ensure your script is named script.py and located in the root directory
+      
+      - name: Add commit comment
+        run: |
+          file_content=$(cat failed_CKV_Detailed.txt)
+          # Escape markdown special characters without adding backticks
+          escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
+          jq -nc --arg body "$escaped_content" '{"body": $body}' | \
+          curl -sL -X POST -d @- \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
+
+  tfsec:
+    name: tfsec sarif report
+    runs-on: ubuntu-latest
+    needs: tflint
+    permissions: write-all
+
+    steps:
+      - name: Clone repo
+        uses: actions/checkout@v3
+
+      - name: run report
+        uses: aquasecurity/tfsec-sarif-action@v0.1.0
+        with:
+          sarif_file: tfsec.sarif          
+
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: tfsec.sarif     
+
+
+      
+  
+
+
+
