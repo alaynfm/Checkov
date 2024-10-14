@@ -62,26 +62,6 @@ jobs:
 
     - name: Run TFLint
       run: tflint -f compact --chdir=infra/ --recursive
-      continue-on-error: true
-
-
-    - name: Add TFLint Problem Matcher
-      run: echo "::add-matcher::${{ runner.tool_cache }}/tflint.json"
-
-    - name: Run TFLint
-      run: tflint --format compact
-
-
-    - uses: terraform-linters/setup-tflint@v4
-      with:
-        tflint_wrapper: true
-
-    - id: tflint
-      run: tflint -f compact
-
-    - run: echo ${{ steps.tflint.outputs.stdout }}
-    - run: echo ${{ steps.tflint.outputs.stderr }}
-    - run: echo ${{ steps.tflint.outputs.exitcode }}
 
   static_analysis:
     name: 'Static Analysis'
