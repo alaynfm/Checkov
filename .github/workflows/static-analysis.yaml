@@ -61,7 +61,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Run TFLint
-      run: tflint -f compact --chdir=infra/ --recursive
+      run: tflint --chdir=infra/ --recursive -c ${{ github.workspace }}/infra/.tflint.hcl
 
   static_analysis:
     name: 'Static Analysis'
