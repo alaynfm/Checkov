@@ -128,7 +128,6 @@ jobs:
     name: tfsec sarif report
     runs-on: ubuntu-latest
     needs: tflint
-    permissions: write-all
 
     steps:
       - name: Clone repo
