@@ -13,6 +13,7 @@ module "vpc" {
   environment        = var.environment
 }
 
+/**
 module "rds" {
   source                 = "./rds"
   project_name           = var.name
@@ -23,3 +24,4 @@ module "rds" {
 
   depends_on = [module.vpc]
 }
+**/
