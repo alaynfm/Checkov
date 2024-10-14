@@ -71,7 +71,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Explicitly use the GITHUB_TOKEN from secrets
 
 
-
   static_analysis_Checkov:
     name: 'Checkov Policies'
     runs-on: ubuntu-latest
