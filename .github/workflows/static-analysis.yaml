@@ -48,6 +48,7 @@ jobs:
         with:
           sarif_file: results.sarif
           category: my-analysis-tool
+          
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
