@@ -40,7 +40,13 @@ jobs:
 
       - name: Add commit comment
         run: |
-          file_content=$(cat esults.txt)
+          # Check if results.txt is empty
+          if [ ! -s results.txt ]; then
+            echo "results.txt is empty. Exiting with status 1."
+            exit 1
+          fi
+
+          file_content=$(cat results.txt)
           # Escape markdown special characters without adding backticks
           escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
           jq -nc --arg body "$escaped_content" '{"body": $body}' | \
@@ -48,6 +54,7 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
+
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
