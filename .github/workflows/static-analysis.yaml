@@ -60,7 +60,8 @@ jobs:
 
     - name: Run TFLint and generate SARIF report
       run: |
-        tflint -f sarif --chdir=infra/ --recursive > tflint.sarif
+        tflint -f sarif --chdir=infra/ --recursive
+        ls -lias
       continue-on-error: true
 
     - name: Upload SARIF file
