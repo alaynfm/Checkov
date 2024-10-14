@@ -60,21 +60,20 @@ jobs:
 
     - name: Run TFLint and generate SARIF report
       run: |
-        tflint -f sarif --chdir=infra/ --recursive
-        ls -lias
+        tflint -f sarif --chdir=infra/ --recursive > results.sarif
       continue-on-error: true
 
-    - name: Run TFLint and generate SARIF report
+    - name: List files to confirm SARIF report generation
       run: |
         ls -lias
+        cat results.sarif
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v3
       with:
           # Path to SARIF file relative to the root of the repository
-        sarif_file: results.sarif
+        sarif_file: infra/results.sarif
           # Optional category for the results
-          # Used to differentiate multiple results for one commit
         category: my-analysis-tool
 
   static_analysis_Checkov:
