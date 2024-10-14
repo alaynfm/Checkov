@@ -35,15 +35,15 @@ jobs:
 
       - name: Run TFLint and generate SARIF report
         run: |
-          tflint --chdir=infra/ --recursive -f sarif > results.sarif
+          tflint --chdir=infra/ --recursive -f compact > results.txt
         continue-on-error: true
 
       - name: Add commit comment
         run: |
 
           # Check if results.txt is not empty
-          if [  -s results.sarif ]; then
-            file_content=$(cat results.sarif)
+          if [  -s results.txt ]; then
+            file_content=$(cat results.txt)
             # Escape markdown special characters without adding backticks
             escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
             jq -nc --arg body "$escaped_content" '{"body": $body}' | \
