@@ -35,26 +35,26 @@ jobs:
 
       - name: Run TFLint and generate SARIF report
         run: |
-          tflint --chdir=infra/ --recursive > results.txt
+          tflint --chdir=infra/ --recursive -f sarif > results.sarif
         continue-on-error: true
 
       - name: Add commit comment
         run: |
-          # Check if results.txt is empty
-          if [ ! -s results.txt ]; then
-            echo "results.txt is empty. Exiting with status 1."
+
+          # Check if results.txt is not empty
+          if [  -s results.txt ]; then
+            file_content=$(cat results.txt)
+            # Escape markdown special characters without adding backticks
+            escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
+            jq -nc --arg body "$escaped_content" '{"body": $body}' | \
+            curl -sL -X POST -d @- \
+              -H "Content-Type: application/json" \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
             exit 1
           fi
 
-          file_content=$(cat results.txt)
-          # Escape markdown special characters without adding backticks
-          escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
-          jq -nc --arg body "$escaped_content" '{"body": $body}' | \
-          curl -sL -X POST -d @- \
-            -H "Content-Type: application/json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
-
+          echo "TFLINT ERRORS 0"
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
