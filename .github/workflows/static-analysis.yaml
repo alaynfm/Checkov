@@ -37,26 +37,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+      name: Checkout source code
 
-    - name: Set up Terraform
-      uses: hashicorp/setup-terraform@v1
+    - uses: actions/cache@v4
+      name: Cache plugin dir
       with:
-        terraform_version: 1.0.0 #Update the version accordingly
+        path: ~/.tflint.d/plugins
+        key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
 
-    - name: Set up TFLint
-      run: |
-        curl -s https://raw.githubusercontent.com/terraform-linters/tflint/master/install_linux.sh | bash
+    - uses: terraform-linters/setup-tflint@v4
+      name: Setup TFLint
+      with:
+        tflint_version: v0.52.0
 
-      # infra/terraform is the directory for .tflint.hcl file
-    - name: Initialize TFLint
-      run: |
-        tflint --init
-    
+    - name: Show version
+      run: tflint --version
+
+    - name: Init TFLint
+      run: tflint --init
+      env:
+        # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
+        GITHUB_TOKEN: ${{ github.token }}
+
     - name: Run TFLint
-      run: |
-        tflint --chdir=infra/ --recursive -c ${{ github.workspace }}/infra/.tflint.hcl
+      run: tflint -f compact --chdir=infra/ --recursive
+
+
+    - uses: terraform-linters/setup-tflint@v4
+      with:
+        tflint_wrapper: true
+
+    - id: tflint
+      run: tflint -f compact
+
+    - run: echo ${{ steps.tflint.outputs.stdout }}
+    - run: echo ${{ steps.tflint.outputs.stderr }}
+    - run: echo ${{ steps.tflint.outputs.exitcode }}
 
   static_analysis:
     name: 'Static Analysis'
