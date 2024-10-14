@@ -62,7 +62,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Run TFLint
-      run: tflint -f compact --chdir=infra/ --recursive > tflint.txt
+      run: tflint -f compact --chdir=infra/ --recursive > tflint.txt 2>&1
       continue-on-error: true 
 
     - name: Add TFLint Commit Comment
