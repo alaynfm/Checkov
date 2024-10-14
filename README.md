@@ -1,46 +1,51 @@
-# Checkov for Terraform 
+# Pipeline for IaC (Infrastructure as Code)
 
-## Overview
+Welcome to the Infrastructure Deployment Laboratory! It is only a test !!
 
-**Checkov** is an open-source static analysis tool designed to scan infrastructure-as-code (IaC) for security and compliance misconfigurations. When used in conjunction with Terraform, Checkov scans the Terraform configuration files to identify issues before deployment. In the context of Prisma Cloud, Checkov plays a crucial role in static and dynamic analysis, helping to ensure that cloud infrastructure adheres to best security practices and compliance requirements.
+This laboratory is designed to ensure the correct deployment of infrastructure using diffrents tools for both AWS and Azure clouds. 
 
-## Integration with Prisma Cloud
+## Branch Strategy
 
-**Prisma Cloud** offers comprehensive security and compliance monitoring for cloud-native applications and infrastructure. Prisma Cloud integrates with Checkov to provide policy-based security and compliance checks for IaC, including Terraform, CloudFormation, and Kubernetes files. This integration enhances the ability to enforce security controls throughout the CI/CD pipeline, ensuring that infrastructure meets predefined standards before it is deployed to production environments.
+Before any code changes are merged into the `main` branch, the branch strategy ensures that all necessary checks and validations are performed. This process helps maintain the integrity and stability of the production code. Here's how it works:
 
-## Controls Defined in Checkov
+1. **Development in `dev` Branch**: All new features, bug fixes, and updates are first developed in the `dev` branch. This branch is used for ongoing development and integration.
 
-Checkov comes with a vast array of predefined security controls and policies, which are used to assess the Terraform code. These controls cover various domains such as:
-- Security misconfigurations
-- Compliance violations (e.g., PCI-DSS, HIPAA, SOC 2)
-- Best practices for cloud platforms (e.g., AWS, GCP, Azure)
+2. **Static Analysis**: When changes are committed to the `dev`, static analysis tools (like TFLint, Checkov, TFSec, and Infracost) are triggered to check the code for errors, security vulnerabilities, and cost implications. Any issues identified must be resolved before proceeding.
 
-The controls are defined and maintained by the open-source community and security experts at **Bridgecrew** (the creators of Checkov). Prisma Cloud extends these controls by integrating its own policies and rules to align with organizational security standards and regulatory compliance frameworks.
+3. **Merge Request**: Once the code in the `dev` branch is stable and passes all static analysis checks, a merge request is created to merge these changes into the `main` branch.
 
-### How Controls are Updated
+4. **Dynamic Analysis**: Before the merge is completed, dynamic analysis tools (like Terraform Plan, Checkov over the Terraform plan output, Terratest, and Apply) are run to test the code in a runtime environment. This ensures that the code not only passes static checks but also works correctly when executed.
 
-The security and compliance controls used by Checkov are regularly updated to reflect changes in best practices, cloud service provider configurations, and regulatory requirements. This ensures that organizations using Checkov for Terraform are scanning against the latest security and compliance baselines.
+5. **Review and Approval**: The results of the dynamic analysis are reviewed. If all tests pass and no issues are found, the merge request is approved.
 
-1. **Community Updates**: As an open-source project, Checkov benefits from contributions by the community. New rules and controls are frequently added by contributors, security experts, and cloud architects.
-   
-2. **Bridgecrew Updates**: Bridgecrew's team continuously works on updating controls to cover newly identified vulnerabilities, changes in cloud provider services, and evolving regulatory requirements. These updates are automatically integrated into Checkov.
+6. **Merge to `main`**: After approval, the changes are merged into the `main` branch. This branch contains production-ready code that has been thoroughly tested and validated.
 
-3. **Prisma Cloud Updates**: Prisma Cloud continuously updates its policies and controls to reflect the latest compliance requirements and security standards. When Checkov is used as part of Prisma Cloud's pipeline, it benefits from these automatic updates, ensuring that both static and dynamic analysis scans are based on the most current policies.
+Applying changes before merging into the `main` branch offers several advantages:
 
-## Benefits of Using Checkov with Prisma Cloud
+1. **Early Detection**: Identifies issues early, preventing them from reaching production.
+2. **Stability**: Ensures `main` branch remains stable and production-ready.
+3. **Streamlined Review**: Simplifies the review process by ensuring all checks are passed.
+4. **Preventing Rework**: Reduces the need for rework by catching issues early.
+5. **Collaboration**: Encourages team collaboration and continuous improvement.
+6. **Compliance**: Ensures adherence to security and compliance standards.
 
-- **Early Detection**: Checkov allows security and compliance issues to be caught early in the development lifecycle, minimizing the risk of deploying insecure infrastructure.
-- **Automated Compliance**: With regularly updated controls, Checkov helps enforce compliance requirements automatically.
-- **Seamless Integration**: Prisma Cloud’s integration with Checkov makes it easy to embed security checks into CI/CD pipelines, improving security without slowing down development.
+By following this branch strategy, the laboratory ensures that only high-quality, stable, and secure code is deployed to production. This process helps catch and fix issues early, reducing the risk of problems in the live environment.
 
-## Mapping Checkov Controls to AWS SCP
+## Github Actions
 
-Checkov controls can be aligned with AWS Service Control Policies (SCP) if you define a control that serves the same purpose. AWS SCPs are a feature of AWS Organizations that allow you to control the maximum available permissions for all accounts within an organization. While SCPs enforce guardrails at the IAM level, Checkov operates at the infrastructure-as-code (IaC) level, ensuring that configurations follow security and compliance guidelines before deployment.
+Two different pipelines will be exuted:
 
-### Here’s how the two can map together:
 
-- **Similar Goal**: Both Checkov controls and AWS SCPs aim to enforce security and compliance. AWS SCPs control what actions an account or user can perform at a high level, whereas Checkov checks whether your Terraform code is configured according to best practices and policies.
+1. **Static Analysis**: This analysis checks the code for errors and potential issues without executing it. It is triggered on the `dev` branch.
+   - **TFLint**: A linter for Terraform configurations that identifies potential issues and enforces best practices.
+   - **Checkov**: Scans infrastructure as code (IaC) files for security and compliance misconfigurations.
+   - **TFSec**: A security scanner for Terraform code that identifies vulnerabilities and misconfigurations.
+   - **Infracost**: Provides cloud cost estimates for Terraform code, helping to understand the financial impact of infrastructure changes.
+   - **Results**: Aggregates and reviews the outputs from the static analysis tools to ensure all issues are documented and addressed.
 
-- **Custom Controls**: If your organization has specific AWS SCPs (such as denying certain actions or services across accounts), you can create custom Checkov policies that mirror the logic of the SCP. For example, if your SCP denies access to certain EC2 instance types for cost control, you can define a Checkov policy that prevents these types from being defined in Terraform code.
+2. **Dynamic Analysis**: This analysis tests the code by executing it in a runtime environment. It is triggered when a merge is done from the `dev` branch to the `main` branch.
 
-- **Preventive Approach**: Checkov helps to prevent violations at the development phase. By defining a Checkov control that checks the same rules as an SCP, you ensure that these configurations are flagged before they ever reach production, creating an extra layer of preventive enforcement.
+    - **Terraform Plan**: Generates an execution plan, showing what actions Terraform will take to achieve the desired state of the infrastructure.
+   - **Checkov**: Runs over the output of the Terraform plan to identify any security or compliance issues in the planned changes.
+   - **Terratest**: Executes automated tests to validate the infrastructure code by deploying it in a real environment and running various checks.
+   - **Apply**: Applies the Terraform plan to provision the infrastructure in the target environment.
