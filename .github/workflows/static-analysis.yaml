@@ -33,7 +33,7 @@ jobs:
             echo "should_run=false" >> $GITHUB_OUTPUT
           fi
 
-  flint:
+  tflint:
     runs-on: ubuntu-latest
     needs: set_commit_flags
 
