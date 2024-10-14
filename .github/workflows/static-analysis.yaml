@@ -33,56 +33,42 @@ jobs:
             echo "should_run=false" >> $GITHUB_OUTPUT
           fi
 
-  tflint:
+  flint:
     runs-on: ubuntu-latest
     needs: set_commit_flags
 
     steps:
-    - uses: actions/checkout@v4
-      name: Checkout source code
+    - name: Checkout source code
+      uses: actions/checkout@v4
 
-    - uses: actions/cache@v4
-      name: Cache plugin dir
+    - name: Cache TFLint plugin directory
+      uses: actions/cache@v4
       with:
         path: ~/.tflint.d/plugins
         key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
 
-    - uses: terraform-linters/setup-tflint@v4
-      name: Setup TFLint
+    - name: Setup TFLint
+      uses: terraform-linters/setup-tflint@v4
       with:
         tflint_version: v0.52.0
 
-    - name: Show version
+    - name: Show TFLint version
       run: tflint --version
 
-    - name: Init TFLint
+    - name: Initialize TFLint
       run: tflint --init
       env:
-        # https://github.com/terraform-linters/tflint/blob/master/docs/user-guide/plugins.md#avoiding-rate-limiting
         GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Run TFLint
+    - name: Run TFLint and generate SARIF report
       run: |
-        tflint -f compact --chdir=infra/ --recursive > tflint.txt 2>&1
-      continue-on-error: true 
-
-    - name: Add TFLint Commit Comment
-      run: |
-        if [ -s tflint.txt ]; then
-          file_content=$(cat tflint.txt)
-          # Escape markdown special characters without adding backticks
-          escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
-          jq -nc --arg body "$escaped_content" '{"body": $body}' | \
-            curl -sL -X POST -d @- \
-              -H "Content-Type: application/json" \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
-          echo "TFLint found issues."
-          exit 0
-        else
-          echo "No TFLint issues found."
-        fi
+        tflint -f sarif --chdir=infra/ --recursive > tflint.sarif
       continue-on-error: true
+
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: tflint.sarif
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
