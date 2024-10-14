@@ -159,39 +159,16 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Tfsec
-        run: |
-          # Install Tfsec using the official installation script
-          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-          sudo mv tfsec /usr/local/bin/
+      - name: tfsec
+        uses: tfsec/tfsec-sarif-action@main
+        with:
+          sarif_file: tfsec.sarif         
 
-        # Alternatively, you can specify a version:
-        # run: |
-        #   wget https://github.com/aquasecurity/tfsec/releases/download/v1.25.0/tfsec-linux-amd64
-        #   chmod +x tfsec-linux-amd64
-        #   sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
-
-      - name: Run Tfsec
-        run: tfsec infra/ --format compact --out tfsec.txt 
-
-      - name: Add Tfsec Commit Comment
-        run: |
-          if [ -s tfsec.txt ]; then
-            file_content=$(cat tfsec.txt)
-            # Escape markdown special characters to prevent formatting issues
-            escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
-            # Create JSON payload
-            jq -nc --arg body "$escaped_content" '{"body": $body}' > payload.json
-            # Post the comment using GitHub API
-            curl -sL -X POST -d @payload.json \
-              -H "Content-Type: application/json" \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              "https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/comments"
-            echo "Tfsec found issues."
-            exit 2  # Optionally, fail the job after commenting
-          else
-            echo "No Tfsec issues found."
-          fi
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v1
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: tfsec.sarif
 
 
       
