@@ -50,7 +50,6 @@ jobs:
           sarif_file: results.sarif
           category: my-analysis-tool
 
-
   static_analysis_Checkov:
     name: 'Checkov Policies'
     runs-on: ubuntu-latest
