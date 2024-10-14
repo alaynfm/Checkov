@@ -1,5 +1,3 @@
-#https://spacelift.io/blog/infrastructure-as-code-with-github-actions
-
 name: Static Analysis Pipeline
 
 on:
@@ -8,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: write 
+  contents: write
   security-events: write  # Ensure the action can upload SARIF results    
 
 jobs:
@@ -32,49 +30,47 @@ jobs:
             echo "should_run=true" >> $GITHUB_OUTPUT
           else
             echo "should_run=false" >> $GITHUB_OUTPUT
-          fi
 
   tflint:
     runs-on: ubuntu-latest
     needs: set_commit_flags
+    if: needs.set_commit_flags.outputs.should_run == 'true'  # Only run if 'should_run' is true
 
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v4
+      - name: Checkout source code
+        uses: actions/checkout@v4
 
-    - name: Cache TFLint plugin directory
-      uses: actions/cache@v4
-      with:
-        path: ~/.tflint.d/plugins
-        key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
+      - name: Cache TFLint plugin directory
+        uses: actions/cache@v4
+        with:
+          path: ~/.tflint.d/plugins
+          key: ubuntu-latest-tflint-${{ hashFiles('.tflint.hcl') }}
 
-    - name: Setup TFLint
-      uses: terraform-linters/setup-tflint@v4
-      with:
-        tflint_version: v0.52.0
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.52.0
 
-    - name: Initialize TFLint
-      run: tflint --init
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
+      - name: Initialize TFLint
+        run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
-    - name: Run TFLint and generate SARIF report
-      run: |
-        tflint -f sarif --chdir=infra/ --recursive > results.sarif
-      continue-on-error: true
+      - name: Run TFLint and generate SARIF report
+        run: |
+          tflint -f sarif --chdir=infra/ --recursive > results.sarif
+        continue-on-error: true
 
-    - name: List files to confirm SARIF report generation
-      run: |
-        ls -lias
-        cat results.sarif
+      - name: List files to confirm SARIF report generation
+        run: |
+          ls -lias
+          cat results.sarif
 
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-          # Path to SARIF file relative to the root of the repository
-        sarif_file: results.sarif
-          # Optional category for the results
-        category: my-analysis-tool
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
+          category: my-analysis-tool
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
