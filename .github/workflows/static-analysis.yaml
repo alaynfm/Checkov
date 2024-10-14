@@ -64,16 +64,16 @@ jobs:
     - name: Run TFLint
       run: tflint -f compact --chdir=infra/ --recursive >> tflint.txt
 
-      - name: Add commit comment
-        run: |
-          file_content=$(cat tflint.txt)
-          # Escape markdown special characters without adding backticks
-          escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
-          jq -nc --arg body "$escaped_content" '{"body": $body}' | \
-          curl -sL -X POST -d @- \
-            -H "Content-Type: application/json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
+    - name: Add commit comment
+      run: |
+        file_content=$(cat tflint.txt)
+        # Escape markdown special characters without adding backticks
+        escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
+        jq -nc --arg body "$escaped_content" '{"body": $body}' | \
+        curl -sL -X POST -d @- \
+          -H "Content-Type: application/json" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
