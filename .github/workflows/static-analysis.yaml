@@ -62,6 +62,13 @@ jobs:
           output_file_path: prisma_policies.sarif
         continue-on-error: true
 
+
+      - name: Upload Checkov SARIF Reports
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: prisma_policies.sarif
+          category: checkov-analysis
+
       - name: Run Checkov CUSTOM Policies
         id: checkov_custom
         uses: bridgecrewio/checkov-action@master
@@ -73,6 +80,12 @@ jobs:
           output_format: sarif
           output_file_path: custom_policies.sarif
         continue-on-error: true
+
+      - name: Upload Checkov SARIF Reports
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: custom_policies.sarif
+          category: checkov-analysis
 
       - name: Run Checkov GREEN IT Policies
         id: checkov_greenit
@@ -89,10 +102,7 @@ jobs:
       - name: Upload Checkov SARIF Reports
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: |
-            prisma_policies.sarif
-            custom_policies.sarif
-            green_it_policies.sarif
+          sarif_file: green_it_policies.sarif
           category: checkov-analysis
 
 
