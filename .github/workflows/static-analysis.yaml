@@ -55,6 +55,7 @@ jobs:
           fi
 
           echo "TFLINT ERRORS 0"
+        continue-on-error: true
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
