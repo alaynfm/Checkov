@@ -64,11 +64,19 @@ jobs:
         ls -lias
       continue-on-error: true
 
+     - name: Run TFLint and generate SARIF report
+      run: |
+        ls -lias
+
+
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v3
       with:
-        sarif_file: tflint.sarif
-
+          # Path to SARIF file relative to the root of the repository
+        sarif_file: results.sarif
+          # Optional category for the results
+          # Used to differentiate multiple results for one commit
+        category: my-analysis-tool
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
