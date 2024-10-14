@@ -10,26 +10,6 @@ permissions:
   security-events: write  # Ensure the action can upload SARIF results    
 
 jobs:
-  set_commit_flags:
-    name: 'Set Commit Flags'
-    runs-on: ubuntu-latest
-
-    outputs:
-      should_run: ${{ steps.check_commit_message.outputs.should_run }}
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Check Commit Message
-        id: check_commit_message
-        run: |
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          echo "Commit Message: $COMMIT_MESSAGE"
-          if echo "$COMMIT_MESSAGE" | grep -iq "si ci"; then
-            echo "should_run=true" >> $GITHUB_OUTPUT
-          else
-            echo "should_run=false" >> $GITHUB_OUTPUT
 
   tflint:
     runs-on: ubuntu-latest
