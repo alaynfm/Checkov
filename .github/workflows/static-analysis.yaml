@@ -10,9 +10,10 @@ permissions:
   security-events: write  # Ensure the action can upload SARIF results    
 
 jobs:
+
   tflint:
     runs-on: ubuntu-latest
-    permissions: write-all
+    needs: set_commit_flags
 
     steps:
       - name: Checkout source code
@@ -31,24 +32,25 @@ jobs:
 
       - name: Initialize TFLint
         run: tflint --init
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Run TFLint and generate SARIF report
         run: |
-          tflint -f sarif --chdir=infra/ --recursive > results.sarif
+          tflint --chdir=infra/ --recursive > results.txt
         continue-on-error: true
 
-      - name: List files to confirm SARIF report generation
+      - name: Add commit comment
         run: |
-          ls -lias
-          cat results.sarif
-
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: results.sarif
-          category: my-analysis-tool
-
-
+          file_content=$(cat esults.txt)
+          # Escape markdown special characters without adding backticks
+          escaped_content=$(echo "$file_content" | sed 's/\\/\\\\/g; s/\*/\\*/g; s/_/\\_/g; s/{/\\{/g; s/}/\\}/g; s/\[/\\[/g; s/\]/\\]/g; s/(/\\(/g; s/)/\\)/g; s/#/\\#/g; s/+/\\+/g; s/-/\\-/g; s/!/\\!/g')
+          jq -nc --arg body "$escaped_content" '{"body": $body}' | \
+          curl -sL -X POST -d @- \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
+            
   static_analysis_Checkov:
     name: 'Checkov Policies'
     runs-on: ubuntu-latest
