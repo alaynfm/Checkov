@@ -64,10 +64,9 @@ jobs:
         ls -lias
       continue-on-error: true
 
-     - name: Run TFLint and generate SARIF report
+    - name: Run TFLint and generate SARIF report
       run: |
         ls -lias
-
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v3
