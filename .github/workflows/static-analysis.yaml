@@ -64,6 +64,13 @@ jobs:
       run: tflint -f compact --chdir=infra/ --recursive
 
 
+    - name: Add TFLint Problem Matcher
+      run: echo "::add-matcher::${{ runner.tool_cache }}/tflint.json"
+
+    - name: Run TFLint
+      run: tflint --format compact
+
+
     - uses: terraform-linters/setup-tflint@v4
       with:
         tflint_wrapper: true
