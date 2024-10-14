@@ -62,11 +62,8 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Run TFLint
-      run: tflint -f compact --chdir=infra/ --recursive > tflint.txt 2>&1
-      continue-on-error: true 
-
-    - name: Add TFLint Commit Comment
       run: |
+        tflint -f compact --chdir=infra/ --recursive > tflint.txt 2>&1
         if [ -s tflint.txt ]; then
           file_content=$(cat tflint.txt)
           # Escape markdown special characters without adding backticks
@@ -81,7 +78,7 @@ jobs:
         else
           echo "No TFLint issues found."
         fi
-      continue-on-error: true
+      continue-on-error: true 
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
@@ -162,9 +159,14 @@ jobs:
       - name: Install Tfsec
         run: |
           # Install Tfsec using the official installation script
-          wget https://github.com/aquasecurity/tfsec/releases/download/v1.25.0/tfsec-linux-amd64
-          chmod +x tfsec-linux-amd64
-          sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
+          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
+          sudo mv tfsec /usr/local/bin/
+
+        # Alternatively, you can specify a version:
+        # run: |
+        #   wget https://github.com/aquasecurity/tfsec/releases/download/v1.25.0/tfsec-linux-amd64
+        #   chmod +x tfsec-linux-amd64
+        #   sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
 
       - name: Run Tfsec
         run: tfsec infra/ --format compact --out tfsec.txt 
