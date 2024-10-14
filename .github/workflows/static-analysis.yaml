@@ -162,17 +162,12 @@ jobs:
       - name: Install Tfsec
         run: |
           # Install Tfsec using the official installation script
-          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install_linux.sh | bash
-          sudo mv tfsec /usr/local/bin/
-        # Alternatively, you can specify a version:
-        # run: |
-        #   wget https://github.com/aquasecurity/tfsec/releases/download/v1.25.0/tfsec-linux-amd64
-        #   chmod +x tfsec-linux-amd64
-        #   sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
+          wget https://github.com/aquasecurity/tfsec/releases/download/v1.25.0/tfsec-linux-amd64
+          chmod +x tfsec-linux-amd64
+          sudo mv tfsec-linux-amd64 /usr/local/bin/tfsec
 
       - name: Run Tfsec
-        run: tfsec infra/ --format compact --out tfsec.txt 2>&1
-        continue-on-error: true  # Allows the job to continue even if Tfsec finds issues
+        run: tfsec infra/ --format compact --out tfsec.txt 
 
       - name: Add Tfsec Commit Comment
         run: |
