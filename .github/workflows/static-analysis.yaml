@@ -64,6 +64,10 @@ jobs:
     - name: Run TFLint
       run: |
         tflint -f compact --chdir=infra/ --recursive > tflint.txt 2>&1
+      continue-on-error: true 
+
+    - name: Add TFLint Commit Comment
+      run: |
         if [ -s tflint.txt ]; then
           file_content=$(cat tflint.txt)
           # Escape markdown special characters without adding backticks
@@ -74,11 +78,10 @@ jobs:
               -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
               "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
           echo "TFLint found issues."
-          exit 2
+          exit 1
         else
           echo "No TFLint issues found."
         fi
-      continue-on-error: true 
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
