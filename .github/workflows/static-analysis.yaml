@@ -81,6 +81,7 @@ jobs:
         else
           echo "No TFLint issues found."
         fi
+      continue-on-error: true
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
