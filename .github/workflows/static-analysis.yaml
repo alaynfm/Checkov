@@ -67,8 +67,6 @@ jobs:
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: tflint.sarif
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Explicitly use the GITHUB_TOKEN from secrets
 
 
   static_analysis_Checkov:
