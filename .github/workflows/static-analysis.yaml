@@ -64,10 +64,10 @@ jobs:
     - name: Run TFLint
       run: tflint -f compact --chdir=infra/ --recursive
 
-  static_analysis:
-    name: 'Static Analysis'
+  static_analysis_Checkov:
+    name: 'Checkov Policies'
     runs-on: ubuntu-latest
-    needs: set_commit_flags
+    needs: tflint
 
     steps:
       - name: Checkout Code
@@ -108,6 +108,20 @@ jobs:
           output_file_path: .
         continue-on-error: true
 
+      - name: Upload Checkov Reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: all-reports
+          path: |
+            *.csv
+            failed_*.txt
+
+  results:
+    name: 'Checkov Policies'
+    runs-on: ubuntu-latest
+    needs: static_analysis_Checkov
+    steps: 
+
       - name: Run Python Script
         run: |
           python3 .github/staticResults.py  # Ensure your script is named script.py and located in the root directory
@@ -123,13 +137,7 @@ jobs:
             -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
 
-      - name: Upload Checkov Reports
-        uses: actions/upload-artifact@v3
-        with:
-          name: all-reports
-          path: |
-            *.csv
-            failed_*.txt
+      
   
 
 
