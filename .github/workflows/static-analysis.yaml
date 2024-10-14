@@ -65,10 +65,11 @@ jobs:
         tflint -f sarif --chdir=infra/ --recursive > tflint.sarif
       continue-on-error: true
 
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v2
-      with:
-        sarif_file: tflint.sarif
+    - uses: github/codeql-action/upload-sarif@v3
+        with:
+          # Path to SARIF file relative to the root of the repository
+          sarif_file: results.sarif
+
 
   static_analysis_Checkov:
     name: 'Checkov Policies'
