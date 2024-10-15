@@ -57,17 +57,10 @@ jobs:
         with:
           directory: infra/
           framework: terraform
-          #config_file: aws/CKV_LIST.yaml
+          config_file: aws/CKV_LIST.yaml
           output_format: sarif
           output_file_path: prisma_policies.sarif
         continue-on-error: true
-
-      - name: Upload Checkov SARIF Reports
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: |
-            prisma_policies.sarif
-          category: checkov-analysis-1
 
       - name: Run Checkov CUSTOM Policies
         id: checkov_custom
@@ -93,6 +86,15 @@ jobs:
           output_file_path: green_it_policies.sarif
         continue-on-error: true
 
+      - name: Upload Checkov SARIF Reports
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: |
+            prisma_policies.sarif
+            custom_policies.sarif
+            green_it_policies.sarif
+          category: checkov-analysis
+
 
   tfsec:
     name: tfsec sarif report
@@ -111,8 +113,7 @@ jobs:
       - name: Upload SARIF file
         uses: github/codeql-action/upload-sarif@v3
         with:
-          # Path to SARIF file relative to the root of the repository
-          sarif_file: tfsec.sarif
+          sarif_file: tfsec.sarif # Path to SARIF file relative to the root of the repository
           category: tfsec     
 
 
