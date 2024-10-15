@@ -92,7 +92,6 @@ jobs:
           output_format: sarif
           output_file_path: green_it_policies.sarif
         continue-on-error: true
-
       
 
 
