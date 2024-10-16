@@ -6,7 +6,9 @@ on:
       - main
 permissions:
   contents: write
-  security-events: write  # Ensure the action can upload SARIF results    
+  security-events: write  # Ensure the action can upload SARIF results 
+
+runs-on: self-hosted   
 
 jobs:
   tflint:
