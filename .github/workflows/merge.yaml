@@ -8,12 +8,19 @@ permissions:
   contents: write
   security-events: write  # Ensure the action can upload SARIF results 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> d1a09aa5d87f3a4fcfe971ddc78ae1ecdbcb83ad
 jobs:
   
   tflint:
+<<<<<<< HEAD
+    runs-on: self-hosted
+=======
     runs-on: self-hosted
     runs-on: ubuntu-latest
+>>>>>>> d1a09aa5d87f3a4fcfe971ddc78ae1ecdbcb83ad
     permissions: write-all
 
     steps:
